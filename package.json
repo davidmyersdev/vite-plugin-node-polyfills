@@ -1,0 +1,37 @@
+{
+  "name": "vite-plugin-node-polyfills",
+  "description": "A Vite plugin to polyfill native Node modules for the browser",
+  "version": "0.1.0",
+  "author": "David Myers <david@voracious.dev>",
+  "funding": "https://github.com/sponsors/voracious",
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "polyfills",
+    "vite",
+    "vite-plugin"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "module": "./dist/index.js",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "packageManager": "yarn@3.2.3",
+  "devDependencies": {
+    "esbuild": "^0.15.5",
+    "typescript": "^4.7.4",
+    "vite": "^3.0.9",
+    "vite-plugin-inspect": "^0.6.0"
+  },
+  "dependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@esbuild-plugins/node-modules-polyfill": "^0.1.4"
+  }
+}
