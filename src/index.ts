@@ -6,12 +6,13 @@ import type { Plugin } from 'vite'
 export const nodePolyfills = (_options = {}): Plugin => {
   return {
     name: 'vite-plugin-node-polyfills',
+    // @ts-expect-error The rollupNodePolyFill() function does not match the Vite expected type signature.
     config: (_config, _env) => {
       return {
         build: {
           rollupOptions: {
             plugins: [
-              rollupNodePolyFill,
+              rollupNodePolyFill(),
             ],
           },
         },
