@@ -31,6 +31,14 @@ export default defineConfig({
 })
 ```
 
+## Why?
+
+The following error can occur when a package references a native Node module without providing a polyfill. See [this Vite issue](https://github.com/vitejs/vite/issues/9200) for more info.
+
+```
+Module "stream" has been externalized for browser compatibility. Cannot access "stream.Readable" in client code.
+```
+
 ## Attribution
 
 Special thanks to [@FbN](https://github.com/FbN) for putting together [this gist](https://gist.github.com/FbN/0e651105937c8000f10fefdf9ec9af3d).
