@@ -1,5 +1,6 @@
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
-import rollupNodePolyFill, { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 import type { Plugin } from 'vite'
 
 export const nodePolyfills = (_options = {}): Plugin => {
@@ -10,7 +11,7 @@ export const nodePolyfills = (_options = {}): Plugin => {
         build: {
           rollupOptions: {
             plugins: [
-              rollupNodePolyFill(),
+              rollupNodePolyFill,
             ],
           },
         },
@@ -21,10 +22,10 @@ export const nodePolyfills = (_options = {}): Plugin => {
             },
             plugins: [
               NodeGlobalsPolyfillPlugin({
+                buffer: true,
                 process: true,
-                buffer: true
               }),
-              NodeModulesPolyfillPlugin()
+              NodeModulesPolyfillPlugin(),
             ]
           },
         },

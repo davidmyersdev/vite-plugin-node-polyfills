@@ -36,6 +36,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@esbuild-plugins/node-globals-polyfill", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.1.1"],\
             ["@esbuild-plugins/node-modules-polyfill", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.1.4"],\
             ["esbuild", "npm:0.15.5"],\
+            ["rollup-plugin-node-polyfills", "npm:0.2.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=a1c5e5"],\
             ["vite", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:3.0.9"],\
             ["vite-plugin-inspect", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.6.0"]\
@@ -1809,6 +1810,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@esbuild-plugins/node-globals-polyfill", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.1.1"],\
             ["@esbuild-plugins/node-modules-polyfill", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.1.4"],\
             ["esbuild", "npm:0.15.5"],\
+            ["rollup-plugin-node-polyfills", "npm:0.2.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=a1c5e5"],\
             ["vite", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:3.0.9"],\
             ["vite-plugin-inspect", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.6.0"]\
