@@ -1,6 +1,13 @@
 *.log
 .DS_Store
-.yarn/install-state.gz
+.yarn/*
 dist
 node_modules
 package.tgz
+
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
