@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-node-polyfills",
   "description": "A Vite plugin to polyfill native Node modules for the browser",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "David Myers <david@voracious.dev>",
   "funding": "https://github.com/sponsors/voracious",
   "homepage": "https://github.com/voracious/vite-plugin-node-polyfills",
