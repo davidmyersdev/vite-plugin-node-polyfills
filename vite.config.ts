@@ -1,0 +1,34 @@
+import { defineConfig } from 'vite'
+import { externalizeDeps } from 'vite-plugin-externalize-deps'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  build: {
+    lib: {
+      entry: './src/index.ts',
+      fileName: 'index',
+      formats: [],
+    },
+    rollupOptions: {
+    external: [/^node:.*$/],
+      output: [
+        {
+          esModule: true,
+          exports: 'named',
+          format: 'es',
+        },
+        {
+          exports: 'named',
+          format: 'cjs',
+          inlineDynamicImports: true,
+          interop: 'esModule',
+        },
+      ],
+    },
+    sourcemap: true,
+    target: 'esnext',
+  },
+  plugins: [
+    externalizeDeps(),
+  ],
+})
