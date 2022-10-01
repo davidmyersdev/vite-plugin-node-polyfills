@@ -1,6 +1,6 @@
 # vite-plugin-node-polyfills
 
-A Vite plugin to polyfill Node's Core Modules for browser environments. Supports `node:` protocol imports.
+A Vite plugin to polyfill Node's Core Modules for browser environments. Supports [`node:` protocol imports](https://nodejs.org/dist/latest-v16.x/docs/api/esm.html#node-imports).
 
 ### Why do I need this?
 
@@ -34,7 +34,10 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    nodePolyfills(),
+    nodePolyfills({
+      // Whether to polyfill `node:` protocol imports.
+      protocolImports: true,
+    }),
   ],
 })
 ```
