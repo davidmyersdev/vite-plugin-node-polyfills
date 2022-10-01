@@ -1,6 +1,14 @@
 # vite-plugin-node-polyfills
 
-A Vite plugin to polyfill native Node modules for the browser
+A Vite plugin to polyfill Node's Core Modules for browser environments. Supports `node:` protocol imports.
+
+### Why do I need this?
+
+```
+Module "stream" has been externalized for browser compatibility. Cannot access "stream.Readable" in client code.
+```
+
+Since browsers do not support Node's [Core Modules](https://nodejs.org/dist/latest-v16.x/docs/api/modules.html#core-modules), packages that use them must be polyfilled to function in browser environments. In an attempt to prevent runtime errors, Vite produces [errors](https://github.com/vitejs/vite/issues/9200) or [warnings](https://github.com/vitejs/vite/pull/9837) when your code references builtin modules such as `fs` or `path`.
 
 ## Getting Started
 
@@ -30,15 +38,3 @@ export default defineConfig({
   ],
 })
 ```
-
-## Why?
-
-The following error can occur when a package references a native Node module without providing a polyfill. See [this Vite issue](https://github.com/vitejs/vite/issues/9200) for more info.
-
-```
-Module "stream" has been externalized for browser compatibility. Cannot access "stream.Readable" in client code.
-```
-
-## Attribution
-
-Special thanks to [@FbN](https://github.com/FbN) for putting together [this gist](https://gist.github.com/FbN/0e651105937c8000f10fefdf9ec9af3d).
