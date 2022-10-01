@@ -2109,7 +2109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:~2.78.0":
+"rollup@npm:2.78.1, rollup@npm:~2.78.0":
   version: 2.78.1
   resolution: "rollup@npm:2.78.1"
   dependencies:
@@ -2502,6 +2502,7 @@ __metadata:
     "@types/node": ^18.7.23
     esbuild: ^0.15.10
     node-stdlib-browser: ^1.2.0
+    rollup: 2.78.1
     typescript: 4.8.3
     vite: ^3.1.4
     vite-plugin-externalize-deps: ^0.1.5

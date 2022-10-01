@@ -1,3 +1,3 @@
-import { resolve } from 'node:path'
+import { resolve } from 'path'
 
 console.log(resolve('.'))

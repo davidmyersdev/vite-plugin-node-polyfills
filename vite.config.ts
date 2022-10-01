@@ -21,7 +21,7 @@ export default defineConfig({
           exports: 'named',
           format: 'cjs',
           inlineDynamicImports: true,
-          interop: 'esModule',
+          interop: 'auto',
         },
       ],
     },
