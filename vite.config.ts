@@ -10,7 +10,7 @@ export default defineConfig({
       formats: [],
     },
     rollupOptions: {
-    external: [/^node:.*$/],
+      external: [/^node:.*$/],
       output: [
         {
           esModule: true,
