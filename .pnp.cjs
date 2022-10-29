@@ -24,7 +24,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
-      ["vite-plugin-node-polyfills", ["workspace:."]]\
+      ["vite-plugin-node-polyfills", ["virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#workspace:.", "workspace:."]]\
     ],\
     "fallbackPool": [\
     ],\
@@ -37,12 +37,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.7.23"],\
             ["esbuild", "npm:0.15.10"],\
             ["node-stdlib-browser", "npm:1.2.0"],\
+            ["ohmyfetch", "npm:0.4.20"],\
             ["rollup", "npm:2.78.1"],\
             ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
             ["vite", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:3.1.4"],\
             ["vite-plugin-externalize-deps", "npm:0.1.5"],\
             ["vite-plugin-inspect", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.6.0"],\
-            ["vite-plugin-node-polyfills", "workspace:."]\
+            ["vite-plugin-node-polyfills", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#workspace:."]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -477,6 +478,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["busboy", [\
+        ["npm:1.6.0", {\
+          "packageLocation": "./.yarn/cache/busboy-npm-1.6.0-ebb5cbb04b-32801e2c01.zip/node_modules/busboy/",\
+          "packageDependencies": [\
+            ["busboy", "npm:1.6.0"],\
+            ["streamsearch", "npm:1.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["cacache", [\
         ["npm:16.1.3", {\
           "packageLocation": "./.yarn/cache/cacache-npm-16.1.3-4e2088ed0d-d91409e6e5.zip/node_modules/cacache/",\
@@ -726,6 +737,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["des.js", "npm:1.0.1"],\
             ["inherits", "npm:2.0.4"],\
             ["minimalistic-assert", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["destr", [\
+        ["npm:1.2.0", {\
+          "packageLocation": "./.yarn/cache/destr-npm-1.2.0-8ce766555e-b8617f2aba.zip/node_modules/destr/",\
+          "packageDependencies": [\
+            ["destr", "npm:1.2.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1951,6 +1971,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["node-fetch-native", [\
+        ["npm:0.1.8", {\
+          "packageLocation": "./.yarn/cache/node-fetch-native-npm-0.1.8-42f942d60a-1cea29dc30.zip/node_modules/node-fetch-native/",\
+          "packageDependencies": [\
+            ["node-fetch-native", "npm:0.1.8"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["node-gyp", [\
         ["npm:9.1.0", {\
           "packageLocation": "./.yarn/unplugged/node-gyp-npm-9.1.0-2091059b31/node_modules/node-gyp/",\
@@ -2067,6 +2096,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["define-properties", "npm:1.1.4"],\
             ["has-symbols", "npm:1.0.3"],\
             ["object-keys", "npm:1.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["ohmyfetch", [\
+        ["npm:0.4.20", {\
+          "packageLocation": "./.yarn/cache/ohmyfetch-npm-0.4.20-63b1ecaef8-dfaffa9f38.zip/node_modules/ohmyfetch/",\
+          "packageDependencies": [\
+            ["ohmyfetch", "npm:0.4.20"],\
+            ["destr", "npm:1.2.0"],\
+            ["node-fetch-native", "npm:0.1.8"],\
+            ["ufo", "npm:0.8.6"],\
+            ["undici", "npm:5.12.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -2607,6 +2649,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["streamsearch", [\
+        ["npm:1.1.0", {\
+          "packageLocation": "./.yarn/cache/streamsearch-npm-1.1.0-fc3ad6536d-1cce16cea8.zip/node_modules/streamsearch/",\
+          "packageDependencies": [\
+            ["streamsearch", "npm:1.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["string-width", [\
         ["npm:4.2.3", {\
           "packageLocation": "./.yarn/cache/string-width-npm-4.2.3-2c27177bae-e52c10dc3f.zip/node_modules/string-width/",\
@@ -2731,6 +2782,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ufo", "npm:0.8.5"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:0.8.6", {\
+          "packageLocation": "./.yarn/cache/ufo-npm-0.8.6-4faa730f12-5d48357623.zip/node_modules/ufo/",\
+          "packageDependencies": [\
+            ["ufo", "npm:0.8.6"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["unbox-primitive", [\
@@ -2742,6 +2800,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["has-bigints", "npm:1.0.2"],\
             ["has-symbols", "npm:1.0.3"],\
             ["which-boxed-primitive", "npm:1.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["undici", [\
+        ["npm:5.12.0", {\
+          "packageLocation": "./.yarn/cache/undici-npm-5.12.0-75a51aa3f4-fbc2277049.zip/node_modules/undici/",\
+          "packageDependencies": [\
+            ["undici", "npm:5.12.0"],\
+            ["busboy", "npm:1.6.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -2878,6 +2946,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["vite-plugin-node-polyfills", [\
+        ["virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#workspace:.", {\
+          "packageLocation": "./.yarn/__virtual__/vite-plugin-node-polyfills-virtual-f9ee33cd6a/1/",\
+          "packageDependencies": [\
+            ["@rollup/plugin-inject", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:4.0.4"],\
+            ["@types/node", "npm:18.7.23"],\
+            ["@types/vite", null],\
+            ["esbuild", "npm:0.15.10"],\
+            ["node-stdlib-browser", "npm:1.2.0"],\
+            ["ohmyfetch", "npm:0.4.20"],\
+            ["rollup", "npm:2.78.1"],\
+            ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
+            ["vite", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:3.1.4"],\
+            ["vite-plugin-externalize-deps", "npm:0.1.5"],\
+            ["vite-plugin-inspect", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.6.0"],\
+            ["vite-plugin-node-polyfills", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#workspace:."]\
+          ],\
+          "packagePeers": [\
+            "@types/vite",\
+            "vite"\
+          ],\
+          "linkType": "SOFT"\
+        }],\
         ["workspace:.", {\
           "packageLocation": "./",\
           "packageDependencies": [\
@@ -2885,12 +2975,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.7.23"],\
             ["esbuild", "npm:0.15.10"],\
             ["node-stdlib-browser", "npm:1.2.0"],\
+            ["ohmyfetch", "npm:0.4.20"],\
             ["rollup", "npm:2.78.1"],\
             ["typescript", "patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=a1c5e5"],\
             ["vite", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:3.1.4"],\
             ["vite-plugin-externalize-deps", "npm:0.1.5"],\
             ["vite-plugin-inspect", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#npm:0.6.0"],\
-            ["vite-plugin-node-polyfills", "workspace:."]\
+            ["vite-plugin-node-polyfills", "virtual:cb7781c5a2b80dcfc55450a12fe45af512a13a69e16845c8aefa0548cdde5b3b1addb6ced5c30e69ae19305cc48a35827892e1279101472594c702eac0fe8aa5#workspace:."]\
           ],\
           "linkType": "SOFT"\
         }]\
