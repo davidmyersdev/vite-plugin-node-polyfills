@@ -64,9 +64,10 @@ export const nodePolyfills = (options: Partial<PolyfillOptions> = {}): Plugin =>
             plugins: [
               {
                 ...inject({
-                  Buffer: 'Buffer',
-                  global: 'global',
-                  process: 'process',
+                  // cf. https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
+                  global: [globalShims, 'global'],
+                  process: [globalShims, 'process'],
+                  Buffer: [globalShims, 'Buffer']
                 }),
               },
             ],
