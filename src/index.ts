@@ -31,7 +31,7 @@ interface PolyfillOptions {
  */
 export const nodePolyfills = (options: Partial<PolyfillOptions> = {}): Plugin => {
   const require = createRequire(import.meta.url)
-  const globalShims = require.resolve('node-stdlib-browser/helpers/esbuild/shim')
+  const globalShimsPath = require.resolve('node-stdlib-browser/helpers/esbuild/shim')
   const optionsResolved: PolyfillOptions = {
     protocolImports: true,
     // User options take priority.
@@ -65,9 +65,9 @@ export const nodePolyfills = (options: Partial<PolyfillOptions> = {}): Plugin =>
               {
                 ...inject({
                   // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
-                  global: [globalShims, 'global'],
-                  process: [globalShims, 'process'],
-                  Buffer: [globalShims, 'Buffer'],
+                  global: [globalShimsPath, 'global'],
+                  process: [globalShimsPath, 'process'],
+                  Buffer: [globalShimsPath, 'Buffer'],
                 }),
               },
             ],
@@ -82,10 +82,29 @@ export const nodePolyfills = (options: Partial<PolyfillOptions> = {}): Plugin =>
               process: 'process',
             },
             inject: [
-              globalShims,
+              globalShimsPath,
             ],
             plugins: [
               esbuildPlugin(polyfills),
+              // Supress the 'injected path "..." cannot be marked as external' error in Vite 4 (emitted by esbuild).
+              // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1469
+              {
+                name: 'vite-plugin-node-polyfills-shims-resolver',
+                setup(build) {
+                  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+                  const escapedGlobalShimsPath = globalShimsPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                  const filter = new RegExp(`^${escapedGlobalShimsPath}$`)
+
+                  // https://esbuild.github.io/plugins/#on-resolve
+                  build.onResolve({ filter }, () => {
+                    return {
+                      // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1468
+                      external: false,
+                      path: globalShimsPath,
+                    }
+                  })
+                },
+              },
             ],
           },
         },
