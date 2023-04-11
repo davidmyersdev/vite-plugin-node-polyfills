@@ -6,6 +6,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 export default defineConfig({
   plugins: [
     nodePolyfills({
+      exclude: ['fs'],
       protocolImports: true,
     }),
   ],

@@ -5,14 +5,34 @@ import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rol
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import type { Plugin } from 'vite'
 
+export type ModuleName = keyof typeof stdLibBrowser
+export type ModuleNameWithoutNodePrefix<T = ModuleName> = T extends `node:${infer P}` ? P : never
+
 interface PolyfillOptions {
-  protocolImports: boolean
+  /**
+   * @example
+   *
+   * ```ts
+   * nodePolyfills({
+   *   exclude: ['fs', 'path']
+   * })
+   * ```
+   */
+  exclude: ModuleNameWithoutNodePrefix[],
+  /**
+   * @default true
+   */
+  protocolImports: boolean,
+}
+
+const isProtocolImport = (name: string) => {
+  return name.startsWith('node:')
 }
 
 /**
  * Returns a Vite plugin to polyfill Node's Core Modules for browser environments. Supports `node:` protocol imports.
  *
- * @example Use it in `vite.config.ts`
+ * @example
  *
  * ```ts
  * // vite.config.ts
@@ -22,6 +42,8 @@ interface PolyfillOptions {
  * export default defineConfig({
  *   plugins: [
  *     nodePolyfills({
+ *       // Specific modules that should not be polyfilled.
+ *       exclude: [],
  *       // Whether to polyfill `node:` protocol imports.
  *       protocolImports: true,
  *     }),
@@ -33,27 +55,34 @@ export const nodePolyfills = (options: Partial<PolyfillOptions> = {}): Plugin =>
   const require = createRequire(import.meta.url)
   const globalShimsPath = require.resolve('node-stdlib-browser/helpers/esbuild/shim')
   const optionsResolved: PolyfillOptions = {
+    exclude: [],
     protocolImports: true,
     // User options take priority.
     ...options,
   }
 
+  const isExcluded = (name: string) => {
+    return optionsResolved.exclude.some((excludedName) => {
+      return name === excludedName || name === `node:${excludedName}`
+    })
+  }
+
   return {
     name: 'vite-plugin-node-polyfills',
     config: (_config, _env) => {
-      const polyfills = Object.entries(stdLibBrowser).reduce((included: Record<string, string>, [name, value]) => {
+      const polyfills = (Object.entries(stdLibBrowser) as Array<[ModuleName, string]>).reduce<Record<ModuleName, string>>((included, [name, value]) => {
         if (!optionsResolved.protocolImports) {
-          const isProtocolImport = /^node:/.test(name)
-
-          if (isProtocolImport) {
+          if (isProtocolImport(name)) {
             return included
           }
         }
 
-        included[name] = value
+        if (!isExcluded(name)) {
+          included[name] = value
+        }
 
         return included
-      }, {})
+      }, {} as Record<ModuleName, string>)
 
       return {
         build: {
