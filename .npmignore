@@ -1,8 +1,4 @@
-/.pnp.cjs
-/.pnp.loader.mjs
 /.vscode
-/.yarn
-/.yarnrc.yml
 /src
 /test
 /tsconfig.json
