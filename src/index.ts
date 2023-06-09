@@ -5,24 +5,70 @@ import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rol
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import type { Plugin } from 'vite'
 
+export type BuildTarget = 'build' | 'dev'
+export type BooleanOrBuildTarget = boolean | BuildTarget
 export type ModuleName = keyof typeof stdLibBrowser
 export type ModuleNameWithoutNodePrefix<T = ModuleName> = T extends `node:${infer P}` ? P : never
 
-interface PolyfillOptions {
+export type PolyfillOptions = {
   /**
    * @example
    *
    * ```ts
    * nodePolyfills({
-   *   exclude: ['fs', 'path']
+   *   exclude: ['fs', 'path'],
    * })
    * ```
    */
-  exclude: ModuleNameWithoutNodePrefix[],
+  exclude?: ModuleNameWithoutNodePrefix[],
+  /**
+   * Specify whether specific globals should be polyfilled.
+   *
+   * @example
+   *
+   * ```ts
+   * nodePolyfills({
+   *   globals: {
+   *     Buffer: false,
+   *     global: true,
+   *     process: 'build',
+   *   },
+   * })
+   * ```
+   */
+  globals?: {
+    Buffer?: BooleanOrBuildTarget,
+    global?: BooleanOrBuildTarget,
+    process?: BooleanOrBuildTarget,
+  },
   /**
    * @default true
    */
+  protocolImports?: boolean,
+}
+
+export type PolyfillOptionsResolved = {
+  exclude: ModuleNameWithoutNodePrefix[],
+  globals: {
+    Buffer: BooleanOrBuildTarget,
+    global: BooleanOrBuildTarget,
+    process: BooleanOrBuildTarget,
+  },
   protocolImports: boolean,
+}
+
+const isBuildEnabled = (value: BooleanOrBuildTarget) => {
+  if (!value) return false
+  if (value === true) return true
+
+  return value === 'build'
+}
+
+const isDevEnabled = (value: BooleanOrBuildTarget) => {
+  if (!value) return false
+  if (value === true) return true
+
+  return value === 'dev'
 }
 
 const isProtocolImport = (name: string) => {
@@ -44,6 +90,12 @@ const isProtocolImport = (name: string) => {
  *     nodePolyfills({
  *       // Specific modules that should not be polyfilled.
  *       exclude: [],
+ *       // Whether to polyfill specific globals.
+ *       globals: {
+ *         Buffer: true, // can also be 'build', 'dev', or false
+ *         global: true,
+ *         process: true,
+ *       },
  *       // Whether to polyfill `node:` protocol imports.
  *       protocolImports: true,
  *     }),
@@ -51,14 +103,19 @@ const isProtocolImport = (name: string) => {
  * })
  * ```
  */
-export const nodePolyfills = (options: Partial<PolyfillOptions> = {}): Plugin => {
+export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   const require = createRequire(import.meta.url)
   const globalShimsPath = require.resolve('node-stdlib-browser/helpers/esbuild/shim')
-  const optionsResolved: PolyfillOptions = {
+  const optionsResolved: PolyfillOptionsResolved = {
     exclude: [],
     protocolImports: true,
-    // User options take priority.
     ...options,
+    globals: {
+      Buffer: true,
+      global: true,
+      process: true,
+      ...options.globals,
+    },
   }
 
   const isExcluded = (name: string) => {
@@ -94,9 +151,9 @@ export const nodePolyfills = (options: Partial<PolyfillOptions> = {}): Plugin =>
               {
                 ...inject({
                   // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
-                  global: [globalShimsPath, 'global'],
-                  process: [globalShimsPath, 'process'],
-                  Buffer: [globalShimsPath, 'Buffer'],
+                  ...(isBuildEnabled(optionsResolved.globals.Buffer) ? { Buffer: [globalShimsPath, 'Buffer'] } : {}),
+                  ...(isBuildEnabled(optionsResolved.globals.global) ? { global: [globalShimsPath, 'global'] } : {}),
+                  ...(isBuildEnabled(optionsResolved.globals.process) ? { process: [globalShimsPath, 'process'] } : {}),
                 }),
               },
             ],
@@ -106,9 +163,9 @@ export const nodePolyfills = (options: Partial<PolyfillOptions> = {}): Plugin =>
           esbuildOptions: {
             // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
             define: {
-              Buffer: 'Buffer',
-              global: 'global',
-              process: 'process',
+              ...(isDevEnabled(optionsResolved.globals.Buffer) ? { Buffer: 'Buffer' } : {}),
+              ...(isDevEnabled(optionsResolved.globals.global) ? { global: 'global' } : {}),
+              ...(isDevEnabled(optionsResolved.globals.process) ? { process: 'process' } : {}),
             },
             inject: [
               globalShimsPath,
