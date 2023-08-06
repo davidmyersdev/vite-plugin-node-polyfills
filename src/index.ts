@@ -161,6 +161,14 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
             ],
           },
         },
+        esbuild: {
+          // In dev, the global polyfills need to be injected as a banner in order for isolated scripts (such as Vue SFCs) to have access to them.
+          banner: [
+            isDevEnabled(optionsResolved.globals.Buffer) ? `import { Buffer as BufferPolyfill } from '${globalShimsPath}'\nwindow.Buffer = BufferPolyfill` : '',
+            isDevEnabled(optionsResolved.globals.global) ? `import { global as globalPolyfill } from '${globalShimsPath}'\nwindow.global = globalPolyfill` : '',
+            isDevEnabled(optionsResolved.globals.process) ? `import { process as processPolyfill } from '${globalShimsPath}'\nwindow.process = processPolyfill` : '',
+          ].join('\n'),
+        },
         optimizeDeps: {
           esbuildOptions: {
             // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
@@ -177,6 +185,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
               // Supress the 'injected path "..." cannot be marked as external' error in Vite 4 (emitted by esbuild).
               // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1469
               {
+
                 name: 'vite-plugin-node-polyfills-shims-resolver',
                 setup(build) {
                   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping

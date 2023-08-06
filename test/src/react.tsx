@@ -33,7 +33,7 @@ function App() {
 }
 
 export const react = () => {
-  ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(
+  ReactDOM.createRoot(document.getElementById('react-app') as HTMLElement).render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <App />

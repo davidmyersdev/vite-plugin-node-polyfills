@@ -46,6 +46,7 @@
     "@tanstack/react-query-devtools": "^4.29.12",
     "@types/node": "^18.7.23",
     "@vitejs/plugin-react": "^4.0.0",
+    "@vitejs/plugin-vue": "^4.2.3",
     "esbuild": "^0.16.16",
     "npm-run-all": "^4.1.5",
     "ohmyfetch": "^0.4.20",
@@ -56,7 +57,8 @@
     "vite": "^4.0.4",
     "vite-plugin-externalize-deps": "^0.1.5",
     "vite-plugin-inspect": "^0.6.0",
-    "vite-plugin-node-polyfills": "workspace:*"
+    "vite-plugin-node-polyfills": "workspace:*",
+    "vue": "^3.3.4"
   },
   "dependencies": {
     "@rollup/plugin-inject": "^5.0.3",
