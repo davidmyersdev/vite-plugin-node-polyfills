@@ -57,6 +57,8 @@ export type PolyfillOptionsResolved = {
   protocolImports: boolean,
 }
 
+const globals = ['buffer', 'global', 'process'].flatMap(name => [name, `node:${name}`])
+
 const isBuildEnabled = (value: BooleanOrBuildTarget) => {
   if (!value) return false
   if (value === true) return true
@@ -105,7 +107,7 @@ const isProtocolImport = (name: string) => {
  */
 export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   const require = createRequire(import.meta.url)
-  const globalShimsPath = require.resolve('node-stdlib-browser/helpers/esbuild/shim')
+  const globalShimsPath = require.resolve('vite-plugin-node-polyfills/shims')
   const optionsResolved: PolyfillOptionsResolved = {
     exclude: [],
     protocolImports: true,
@@ -135,7 +137,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         }
 
         if (!isExcluded(name)) {
-          included[name] = value
+          included[name] = globals.includes(name) ? globalShimsPath : value
         }
 
         return included
@@ -179,10 +181,10 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
                 setup(build) {
                   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
                   const escapedGlobalShimsPath = globalShimsPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-                  const filter = new RegExp(`^${escapedGlobalShimsPath}$`)
+                  const globalShimsFilter = new RegExp(`^${escapedGlobalShimsPath}$`)
 
                   // https://esbuild.github.io/plugins/#on-resolve
-                  build.onResolve({ filter }, () => {
+                  build.onResolve({ filter: globalShimsFilter }, () => {
                     return {
                       // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1468
                       external: false,
