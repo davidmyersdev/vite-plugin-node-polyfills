@@ -128,7 +128,8 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
   return {
     name: 'vite-plugin-node-polyfills',
-    config: (_config, _env) => {
+    config: (_config, env) => {
+      const isDev = env.mode === 'development'
       const polyfills = (Object.entries(stdLibBrowser) as Array<[ModuleName, string]>).reduce<Record<ModuleName, string>>((included, [name, value]) => {
         if (!optionsResolved.protocolImports) {
           if (isProtocolImport(name)) {
@@ -164,9 +165,9 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         esbuild: {
           // In dev, the global polyfills need to be injected as a banner in order for isolated scripts (such as Vue SFCs) to have access to them.
           banner: [
-            isDevEnabled(optionsResolved.globals.Buffer) ? `import { Buffer as BufferPolyfill } from '${globalShimsPath}'\nwindow.Buffer = BufferPolyfill` : '',
-            isDevEnabled(optionsResolved.globals.global) ? `import { global as globalPolyfill } from '${globalShimsPath}'\nwindow.global = globalPolyfill` : '',
-            isDevEnabled(optionsResolved.globals.process) ? `import { process as processPolyfill } from '${globalShimsPath}'\nwindow.process = processPolyfill` : '',
+            isDev && isDevEnabled(optionsResolved.globals.Buffer) ? `import { Buffer as BufferPolyfill } from '${globalShimsPath}'\nglobalThis.Buffer = BufferPolyfill` : '',
+            isDev && isDevEnabled(optionsResolved.globals.global) ? `import { global as globalPolyfill } from '${globalShimsPath}'\nglobalThis.global = globalPolyfill` : '',
+            isDev && isDevEnabled(optionsResolved.globals.process) ? `import { process as processPolyfill } from '${globalShimsPath}'\nglobalThis.process = processPolyfill` : '',
           ].join('\n'),
         },
         optimizeDeps: {
