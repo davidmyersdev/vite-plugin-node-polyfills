@@ -16,6 +16,12 @@ export default defineConfig({
           exports: 'named',
           format: 'es',
         },
+        {
+          exports: 'named',
+          format: 'cjs',
+          inlineDynamicImports: true,
+          interop: 'auto',
+        },
       ],
     },
     sourcemap: true,

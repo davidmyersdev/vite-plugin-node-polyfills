@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import inject from '@rollup/plugin-inject'
 import stdLibBrowser from 'node-stdlib-browser'
@@ -57,8 +58,6 @@ export type PolyfillOptionsResolved = {
   protocolImports: boolean,
 }
 
-const globals = ['buffer', 'global', 'process'].flatMap(name => [name, `node:${name}`])
-
 const isBuildEnabled = (value: BooleanOrBuildTarget) => {
   if (!value) return false
   if (value === true) return true
@@ -108,6 +107,8 @@ const isProtocolImport = (name: string) => {
 export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   const require = createRequire(import.meta.url)
   const globalShimsPath = require.resolve('vite-plugin-node-polyfills/shims')
+  const globalShimsBannerPath = require.resolve('vite-plugin-node-polyfills/shims/banner')
+  const globalShimsBanner = readFileSync(globalShimsBannerPath, 'utf-8')
   const optionsResolved: PolyfillOptionsResolved = {
     exclude: [],
     protocolImports: true,
@@ -126,6 +127,16 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     })
   }
 
+  const toOverride = (name: string): string | void => {
+    if (isDevEnabled(optionsResolved.globals.Buffer) && /^(?:node:)?buffer$/.test(name)) {
+      return require.resolve('buffer-polyfill')
+    }
+
+    if (isDevEnabled(optionsResolved.globals.process) && /^(?:node:)?process$/.test(name)) {
+      return require.resolve('process-polyfill')
+    }
+  }
+
   return {
     name: 'vite-plugin-node-polyfills',
     config: (_config, env) => {
@@ -138,7 +149,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         }
 
         if (!isExcluded(name)) {
-          included[name] = globals.includes(name) ? globalShimsPath : value
+          included[name] = toOverride(name) || value
         }
 
         return included
@@ -164,19 +175,16 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         },
         esbuild: {
           // In dev, the global polyfills need to be injected as a banner in order for isolated scripts (such as Vue SFCs) to have access to them.
-          banner: [
-            isDev && isDevEnabled(optionsResolved.globals.Buffer) ? `import { Buffer as BufferPolyfill } from '${globalShimsPath}'\nglobalThis.Buffer = BufferPolyfill` : '',
-            isDev && isDevEnabled(optionsResolved.globals.global) ? `import { global as globalPolyfill } from '${globalShimsPath}'\nglobalThis.global = globalPolyfill` : '',
-            isDev && isDevEnabled(optionsResolved.globals.process) ? `import { process as processPolyfill } from '${globalShimsPath}'\nglobalThis.process = processPolyfill` : '',
-          ].join('\n'),
+          banner: isDev ? globalShimsBanner : undefined,
         },
         optimizeDeps: {
           esbuildOptions: {
+            banner: isDev ? { js: globalShimsBanner } : undefined,
             // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
             define: {
-              ...(isDevEnabled(optionsResolved.globals.Buffer) ? { Buffer: 'Buffer' } : {}),
-              ...(isDevEnabled(optionsResolved.globals.global) ? { global: 'global' } : {}),
-              ...(isDevEnabled(optionsResolved.globals.process) ? { process: 'process' } : {}),
+              ...(isDev && isDevEnabled(optionsResolved.globals.Buffer) ? { Buffer: 'Buffer' } : {}),
+              ...(isDev && isDevEnabled(optionsResolved.globals.global) ? { global: 'global' } : {}),
+              ...(isDev && isDevEnabled(optionsResolved.globals.process) ? { process: 'process' } : {}),
             },
             inject: [
               globalShimsPath,

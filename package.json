@@ -29,12 +29,20 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./shims": "./shims/dist/index.js"
+    "./shims": {
+      "require": "./shims/dist/index.cjs",
+      "import": "./shims/dist/index.js"
+    },
+    "./shims/banner": {
+      "require": "./shims/banner/dist/index.cjs",
+      "import": "./shims/banner/dist/index.cjs"
+    }
   },
   "scripts": {
-    "build": "run-s build:core build:shims build:types",
+    "build": "run-s build:core build:shims build:shims:banner build:types",
     "build:core": "vite build",
     "build:shims": "vite build ./shims",
+    "build:shims:banner": "vite-node ./shims/banner/build.ts",
     "build:types": "tsc",
     "test": "run-s test:build test:dev",
     "test:build": "vite -c test/vite.config.ts build",
@@ -55,6 +63,7 @@
     "rollup": "^3.8.1",
     "typescript": "4.8.3",
     "vite": "^4.0.4",
+    "vite-node": "^0.34.1",
     "vite-plugin-externalize-deps": "^0.1.5",
     "vite-plugin-inspect": "^0.6.0",
     "vite-plugin-node-polyfills": "workspace:*",
