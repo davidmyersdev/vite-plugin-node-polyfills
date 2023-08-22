@@ -133,10 +133,6 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     if (isDevEnabled(optionsResolved.globals.Buffer) && /^(?:node:)?buffer$/.test(name)) {
       return require.resolve('buffer-polyfill')
     }
-
-    if (isDevEnabled(optionsResolved.globals.process) && /^(?:node:)?process$/.test(name)) {
-      return require.resolve('process-polyfill')
-    }
   }
 
   return {
