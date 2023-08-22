@@ -43,6 +43,8 @@ export type PolyfillOptions = {
     process?: BooleanOrBuildTarget,
   },
   /**
+   * Specify whether the Node protocol version of an import (e.g. `node:buffer`) should be polyfilled too.
+   *
    * @default true
    */
   protocolImports?: boolean,
