@@ -13,6 +13,17 @@ export type ModuleNameWithoutNodePrefix<T = ModuleName> = T extends `node:${infe
 
 export type PolyfillOptions = {
   /**
+   * Includes specific modules. If empty, includes all modules
+   * @example
+   *
+   * ```ts
+   * nodePolyfills({
+   *   include: ['fs', 'path'],
+   * })
+   * ```
+  */
+  include?: ModuleNameWithoutNodePrefix[],
+  /**
    * @example
    *
    * ```ts
@@ -51,6 +62,7 @@ export type PolyfillOptions = {
 }
 
 export type PolyfillOptionsResolved = {
+  include: ModuleNameWithoutNodePrefix[],
   exclude: ModuleNameWithoutNodePrefix[],
   globals: {
     Buffer: BooleanOrBuildTarget,
@@ -112,6 +124,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   const globalShimsBannerPath = require.resolve('vite-plugin-node-polyfills/shims/banner')
   const globalShimsBanner = readFileSync(globalShimsBannerPath, 'utf-8')
   const optionsResolved: PolyfillOptionsResolved = {
+    include: [],
     exclude: [],
     protocolImports: true,
     ...options,
@@ -123,10 +136,15 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     },
   }
 
+  const compareExcludedModuleNames = (moduleName: string, excludedName: string) => {
+    return moduleName === excludedName || moduleName === `node:${excludedName}`;
+  }
+
   const isExcluded = (name: string) => {
-    return optionsResolved.exclude.some((excludedName) => {
-      return name === excludedName || name === `node:${excludedName}`
-    })
+    if (optionsResolved.include.length) {
+      return !optionsResolved.include.some((excludedName) => compareExcludedModuleNames(name, excludedName));
+    };
+    return optionsResolved.exclude.some((excludedName) => compareExcludedModuleNames(name, excludedName));
   }
 
   const toOverride = (name: string): string | void => {
@@ -152,6 +170,8 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
         return included
       }, {} as Record<ModuleName, string>)
+
+      console.log({ ArrayNames: Object.keys(polyfills) });
 
       return {
         build: {
