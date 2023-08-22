@@ -171,8 +171,6 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         return included
       }, {} as Record<ModuleName, string>)
 
-      console.log({ ArrayNames: Object.keys(polyfills) });
-
       return {
         build: {
           rollupOptions: {
