@@ -10,6 +10,7 @@ export default defineConfig({
     // react(),
     vue(),
     nodePolyfills({
+      // include: ['fs', 'path', 'buffer'],
       exclude: ['fs'],
       globals: {
         process: 'build',

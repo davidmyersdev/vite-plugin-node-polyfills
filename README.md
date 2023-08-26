@@ -2,7 +2,7 @@
 
 A Vite plugin to polyfill Node's Core Modules for browser environments. Supports [`node:` protocol imports](https://nodejs.org/dist/latest-v16.x/docs/api/esm.html#node-imports).
 
-### Why do I need this?
+## Why do I need this?
 
 ```
 Module "stream" has been externalized for browser compatibility. Cannot access "stream.Readable" in client code.
@@ -35,7 +35,9 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 export default defineConfig({
   plugins: [
     nodePolyfills({
-      // To exclude specific polyfills, add them to this list.
+      // To add only specific polyfills, add them here. If no option is passed, adds all polyfills
+      include: ['path']
+      // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
       exclude: [
         'fs', // Excludes the polyfill for `fs` and `node:fs`.
       ],
@@ -50,4 +52,50 @@ export default defineConfig({
     }),
   ],
 })
+```
+
+### All polyfills
+
+  - If protocolImports is true, also adds node:[module]
+```js
+  'assert',
+  'buffer',
+  'child_process',
+  'cluster',
+  'console',
+  'constants',
+  'crypto',
+  'dgram',
+  'dns',
+  'domain',
+  'events',
+  'fs',
+  'http',
+  'https',
+  'http2',
+  'module',
+  'net',
+  'os',
+  'path',
+  'punycode',
+  'process',
+  'querystring',
+  'readline',
+  'repl',
+  'stream',
+  '_stream_duplex',
+  '_stream_passthrough',
+  '_stream_readable',
+  '_stream_transform',
+  '_stream_writable',
+  'string_decoder',
+  'sys',
+  'timers/promises',
+  'timers',
+  'tls',
+  'tty',
+  'url',
+  'util',
+  'vm',
+  'zlib',
 ```
