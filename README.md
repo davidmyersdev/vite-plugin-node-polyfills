@@ -1,3 +1,6 @@
+[![Sponsor me](https://img.shields.io/badge/sponsor-DB61A2?style=for-the-badge&logo=GitHub-Sponsors&logoColor=white)](https://voracious.link/sponsor)
+[![Donate](https://img.shields.io/badge/donate-FF5F5F?style=for-the-badge&logo=ko-fi&logoColor=white)](https://voracious.link/donate)
+
 # vite-plugin-node-polyfills
 
 A Vite plugin to polyfill Node's Core Modules for browser environments. Supports [`node:` protocol imports](https://nodejs.org/dist/latest-v16.x/docs/api/esm.html#node-imports).
