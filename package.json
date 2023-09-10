@@ -51,7 +51,6 @@
   "packageManager": "pnpm@8.4.0",
   "devDependencies": {
     "@types/node": "^18.17.15",
-    "@vitejs/plugin-vue": "^4.2.3",
     "esbuild": "^0.18.20",
     "npm-run-all": "^4.1.5",
     "ohmyfetch": "^0.4.20",
@@ -61,8 +60,7 @@
     "vite-node": "^0.34.4",
     "vite-plugin-externalize-deps": "^0.1.5",
     "vite-plugin-inspect": "^0.6.0",
-    "vite-plugin-node-polyfills": "workspace:*",
-    "vue": "^3.3.4"
+    "vite-plugin-node-polyfills": "workspace:*"
   },
   "dependencies": {
     "@rollup/plugin-inject": "^5.0.3",

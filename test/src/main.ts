@@ -3,9 +3,6 @@ import { resolve } from 'node:path'
 import * as process from 'node:process'
 import fs from 'node:fs'
 import { fetch } from 'ohmyfetch'
-import { vue } from './vue'
-
-vue()
 
 console.log(fetch)
 console.log(resolve('.'))
