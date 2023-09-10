@@ -124,6 +124,9 @@ importers:
       '@types/node':
         specifier: ^18.7.23
         version: 18.17.15
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
       ohmyfetch:
         specifier: ^0.4.20
         version: 0.4.20
@@ -1976,6 +1979,10 @@ packages:
     dependencies:
       p-locate: 5.0.0
     dev: false
+
+  /lodash-es@4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
+    dev: true
 
   /loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
