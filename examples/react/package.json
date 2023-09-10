@@ -3,7 +3,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "typecheck": "tsc"
   },
   "devDependencies": {
     "@tanstack/react-query": "^4.29.12",

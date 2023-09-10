@@ -30,9 +30,6 @@ importers:
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
-      ohmyfetch:
-        specifier: ^0.4.20
-        version: 0.4.20
       rollup:
         specifier: ^3.29.1
         version: 3.29.1
@@ -117,6 +114,24 @@ importers:
         version: 5.2.2
       vite:
         specifier: ^4.4.5
+        version: 4.4.9(@types/node@18.17.15)
+      vite-plugin-node-polyfills:
+        specifier: workspace:*
+        version: link:../..
+
+  examples/vanilla:
+    devDependencies:
+      '@types/node':
+        specifier: ^18.7.23
+        version: 18.17.15
+      ohmyfetch:
+        specifier: ^0.4.20
+        version: 0.4.20
+      typescript:
+        specifier: ^5.0.0
+        version: 5.2.2
+      vite:
+        specifier: ^4.0.0
         version: 4.4.9(@types/node@18.17.15)
       vite-plugin-node-polyfills:
         specifier: workspace:*
