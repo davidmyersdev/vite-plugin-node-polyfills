@@ -1,0 +1,172 @@
+diff --git a/index.js b/index.js
+index 7a0e9c2a123bc9d26c20bb3de4a3c4e49b24ee40..c9af1ef3ebdab802bd32609bfb87a2545f4d54ec 100644
+--- a/index.js
++++ b/index.js
+@@ -21,6 +21,7 @@ exports.INSPECT_MAX_BYTES = 50
+ 
+ const K_MAX_LENGTH = 0x7fffffff
+ exports.kMaxLength = K_MAX_LENGTH
++const { Uint8Array: GlobalUint8Array, ArrayBuffer: GlobalArrayBuffer, SharedArrayBuffer: GlobalSharedArrayBuffer } = globalThis
+ 
+ /**
+  * If `Buffer.TYPED_ARRAY_SUPPORT`:
+@@ -49,9 +50,9 @@ if (!Buffer.TYPED_ARRAY_SUPPORT && typeof console !== 'undefined' &&
+ function typedArraySupport () {
+   // Can typed array instances can be augmented?
+   try {
+-    const arr = new Uint8Array(1)
++    const arr = new GlobalUint8Array(1)
+     const proto = { foo: function () { return 42 } }
+-    Object.setPrototypeOf(proto, Uint8Array.prototype)
++    Object.setPrototypeOf(proto, GlobalUint8Array.prototype)
+     Object.setPrototypeOf(arr, proto)
+     return arr.foo() === 42
+   } catch (e) {
+@@ -80,7 +81,7 @@ function createBuffer (length) {
+     throw new RangeError('The value "' + length + '" is invalid for option "size"')
+   }
+   // Return an augmented `Uint8Array` instance
+-  const buf = new Uint8Array(length)
++  const buf = new GlobalUint8Array(length)
+   Object.setPrototypeOf(buf, Buffer.prototype)
+   return buf
+ }
+@@ -115,7 +116,7 @@ function from (value, encodingOrOffset, length) {
+     return fromString(value, encodingOrOffset)
+   }
+ 
+-  if (ArrayBuffer.isView(value)) {
++  if (GlobalArrayBuffer.isView(value)) {
+     return fromArrayView(value)
+   }
+ 
+@@ -126,14 +127,14 @@ function from (value, encodingOrOffset, length) {
+     )
+   }
+ 
+-  if (isInstance(value, ArrayBuffer) ||
+-      (value && isInstance(value.buffer, ArrayBuffer))) {
++  if (isInstance(value, GlobalArrayBuffer) ||
++      (value && isInstance(value.buffer, GlobalArrayBuffer))) {
+     return fromArrayBuffer(value, encodingOrOffset, length)
+   }
+ 
+-  if (typeof SharedArrayBuffer !== 'undefined' &&
+-      (isInstance(value, SharedArrayBuffer) ||
+-      (value && isInstance(value.buffer, SharedArrayBuffer)))) {
++  if (typeof GlobalSharedArrayBuffer !== 'undefined' &&
++      (isInstance(value, GlobalSharedArrayBuffer) ||
++      (value && isInstance(value.buffer, GlobalSharedArrayBuffer)))) {
+     return fromArrayBuffer(value, encodingOrOffset, length)
+   }
+ 
+@@ -176,8 +177,8 @@ Buffer.from = function (value, encodingOrOffset, length) {
+ 
+ // Note: Change prototype *after* Buffer.from is defined to workaround Chrome bug:
+ // https://github.com/feross/buffer/pull/148
+-Object.setPrototypeOf(Buffer.prototype, Uint8Array.prototype)
+-Object.setPrototypeOf(Buffer, Uint8Array)
++Object.setPrototypeOf(Buffer.prototype, GlobalUint8Array.prototype)
++Object.setPrototypeOf(Buffer, GlobalUint8Array)
+ 
+ function assertSize (size) {
+   if (typeof size !== 'number') {
+@@ -263,8 +264,8 @@ function fromArrayLike (array) {
+ }
+ 
+ function fromArrayView (arrayView) {
+-  if (isInstance(arrayView, Uint8Array)) {
+-    const copy = new Uint8Array(arrayView)
++  if (isInstance(arrayView, GlobalUint8Array)) {
++    const copy = new GlobalUint8Array(arrayView)
+     return fromArrayBuffer(copy.buffer, copy.byteOffset, copy.byteLength)
+   }
+   return fromArrayLike(arrayView)
+@@ -281,11 +282,11 @@ function fromArrayBuffer (array, byteOffset, length) {
+ 
+   let buf
+   if (byteOffset === undefined && length === undefined) {
+-    buf = new Uint8Array(array)
++    buf = new GlobalUint8Array(array)
+   } else if (length === undefined) {
+-    buf = new Uint8Array(array, byteOffset)
++    buf = new GlobalUint8Array(array, byteOffset)
+   } else {
+-    buf = new Uint8Array(array, byteOffset, length)
++    buf = new GlobalUint8Array(array, byteOffset, length)
+   }
+ 
+   // Return an augmented `Uint8Array` instance
+@@ -342,8 +343,8 @@ Buffer.isBuffer = function isBuffer (b) {
+ }
+ 
+ Buffer.compare = function compare (a, b) {
+-  if (isInstance(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength)
+-  if (isInstance(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength)
++  if (isInstance(a, GlobalUint8Array)) a = Buffer.from(a, a.offset, a.byteLength)
++  if (isInstance(b, GlobalUint8Array)) b = Buffer.from(b, b.offset, b.byteLength)
+   if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+     throw new TypeError(
+       'The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array'
+@@ -408,12 +409,12 @@ Buffer.concat = function concat (list, length) {
+   let pos = 0
+   for (i = 0; i < list.length; ++i) {
+     let buf = list[i]
+-    if (isInstance(buf, Uint8Array)) {
++    if (isInstance(buf, GlobalUint8Array)) {
+       if (pos + buf.length > buffer.length) {
+         if (!Buffer.isBuffer(buf)) buf = Buffer.from(buf)
+         buf.copy(buffer, pos)
+       } else {
+-        Uint8Array.prototype.set.call(
++        GlobalUint8Array.prototype.set.call(
+           buffer,
+           buf,
+           pos
+@@ -433,7 +434,7 @@ function byteLength (string, encoding) {
+   if (Buffer.isBuffer(string)) {
+     return string.length
+   }
+-  if (ArrayBuffer.isView(string) || isInstance(string, ArrayBuffer)) {
++  if (GlobalArrayBuffer.isView(string) || isInstance(string, GlobalArrayBuffer)) {
+     return string.byteLength
+   }
+   if (typeof string !== 'string') {
+@@ -626,7 +627,7 @@ if (customInspectSymbol) {
+ }
+ 
+ Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
+-  if (isInstance(target, Uint8Array)) {
++  if (isInstance(target, GlobalUint8Array)) {
+     target = Buffer.from(target, target.offset, target.byteLength)
+   }
+   if (!Buffer.isBuffer(target)) {
+@@ -742,11 +743,11 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
+     return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
+   } else if (typeof val === 'number') {
+     val = val & 0xFF // Search for a byte value [0-255]
+-    if (typeof Uint8Array.prototype.indexOf === 'function') {
++    if (typeof GlobalUint8Array.prototype.indexOf === 'function') {
+       if (dir) {
+-        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
++        return GlobalUint8Array.prototype.indexOf.call(buffer, val, byteOffset)
+       } else {
+-        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
++        return GlobalUint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
+       }
+     }
+     return arrayIndexOf(buffer, [val], byteOffset, encoding, dir)
+@@ -1714,11 +1715,11 @@ Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+ 
+   const len = end - start
+ 
+-  if (this === target && typeof Uint8Array.prototype.copyWithin === 'function') {
++  if (this === target && typeof GlobalUint8Array.prototype.copyWithin === 'function') {
+     // Use built-in when available, missing from IE11
+     this.copyWithin(targetStart, start, end)
+   } else {
+-    Uint8Array.prototype.set.call(
++    GlobalUint8Array.prototype.set.call(
+       target,
+       this.subarray(start, end),
+       targetStart

@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  buffer@6.0.3:
+    hash: zkkuxompt5d553skpnegwi5wuy
+    path: patches/buffer@6.0.3.patch
+
 importers:
 
   .:
@@ -13,7 +18,7 @@ importers:
         version: 5.0.3(rollup@3.29.1)
       buffer-polyfill:
         specifier: npm:buffer@^6.0.3
-        version: /buffer@6.0.3
+        version: /buffer@6.0.3(patch_hash=zkkuxompt5d553skpnegwi5wuy)
       node-stdlib-browser:
         specifier: ^1.2.0
         version: 1.2.0
@@ -1144,12 +1149,13 @@ packages:
       ieee754: 1.2.1
     dev: false
 
-  /buffer@6.0.3:
+  /buffer@6.0.3(patch_hash=zkkuxompt5d553skpnegwi5wuy):
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
     dev: false
+    patched: true
 
   /builtin-status-codes@3.0.0:
     resolution: {integrity: sha512-HpGFw18DgFWlncDfjTa2rcQ4W88O1mC8e8yZ2AvQY5KDaktSTwo+KRf6nHK6FRI5FyRyb/5T6+TSxfP7QyGsmQ==}
