@@ -4,6 +4,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "esModuleInterop": true,
+    "jsx": "preserve",
     "module": "ESNext",
     "moduleResolution": "Node",
     "noImplicitReturns": true,
@@ -17,5 +18,5 @@
     "target": "ESNext",
     "useDefineForClassFields": true
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*", "./test/**/*"]
 }
