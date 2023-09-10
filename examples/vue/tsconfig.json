@@ -2,6 +2,7 @@
   "compilerOptions": {
     "jsx": "preserve",
     "module": "ESNext",
-    "moduleResolution": "Bundler"
+    "moduleResolution": "Bundler",
+    "noEmit": true
   }
 }
