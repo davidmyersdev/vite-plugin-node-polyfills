@@ -28,7 +28,25 @@ pnpm install --save-dev vite-plugin-node-polyfills
 yarn add --dev vite-plugin-node-polyfills
 ```
 
+### Zero-config by default
+
 Add the plugin to your `vite.config.ts` file.
+
+```ts
+import { defineConfig } from 'vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [
+    nodePolyfills(),
+  ],
+})
+```
+
+### Customizable when you need it
+
+The following options are available to customize it for your needs.
 
 ```ts
 import { defineConfig } from 'vite'
@@ -42,13 +60,18 @@ export default defineConfig({
       include: ['path']
       // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
       exclude: [
-        'fs', // Excludes the polyfill for `fs` and `node:fs`.
+        'http', // Excludes the polyfill for `http` and `node:http`.
       ],
       // Whether to polyfill specific globals.
       globals: {
         Buffer: true, // can also be 'build', 'dev', or false
         global: true,
         process: true,
+      },
+      // Override the default polyfills for specific modules.
+      overrides: {
+        // Since `fs` is not supported in browsers, we can use the `memfs` package to polyfill it.
+        fs: 'memfs',
       },
       // Whether to polyfill `node:` protocol imports.
       protocolImports: true,
@@ -61,6 +84,11 @@ export default defineConfig({
 
   - If protocolImports is true, also adds node:[module]
 ```js
+  '_stream_duplex',
+  '_stream_passthrough',
+  '_stream_readable',
+  '_stream_transform',
+  '_stream_writable',
   'assert',
   'buffer',
   'child_process',
@@ -74,27 +102,22 @@ export default defineConfig({
   'events',
   'fs',
   'http',
-  'https',
   'http2',
+  'https',
   'module',
   'net',
   'os',
   'path',
-  'punycode',
   'process',
+  'punycode',
   'querystring',
   'readline',
   'repl',
   'stream',
-  '_stream_duplex',
-  '_stream_passthrough',
-  '_stream_readable',
-  '_stream_transform',
-  '_stream_writable',
   'string_decoder',
   'sys',
-  'timers/promises',
   'timers',
+  'timers/promises',
   'tls',
   'tty',
   'url',

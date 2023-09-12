@@ -54,6 +54,20 @@ export type PolyfillOptions = {
     process?: BooleanOrBuildTarget,
   },
   /**
+   * Specify alternative modules to use in place of the default polyfills.
+   *
+   * @example
+   *
+   * ```ts
+   * nodePolyfills({
+   *   overrides: {
+   *     fs: 'memfs',
+   *   },
+   * })
+   * ```
+   */
+  overrides?: { [Key in ModuleNameWithoutNodePrefix]?: string },
+  /**
    * Specify whether the Node protocol version of an import (e.g. `node:buffer`) should be polyfilled too.
    *
    * @default true
@@ -69,6 +83,7 @@ export type PolyfillOptionsResolved = {
     global: BooleanOrBuildTarget,
     process: BooleanOrBuildTarget,
   },
+  overrides: { [Key in ModuleNameWithoutNodePrefix]?: string },
   protocolImports: boolean,
 }
 
@@ -88,6 +103,10 @@ const isDevEnabled = (value: BooleanOrBuildTarget) => {
 
 const isProtocolImport = (name: string) => {
   return name.startsWith('node:')
+}
+
+const stripNodePrefix = (name: ModuleName): ModuleNameWithoutNodePrefix => {
+  return name.replace(/^node:/, '') as ModuleNameWithoutNodePrefix
 }
 
 /**
@@ -126,6 +145,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   const optionsResolved: PolyfillOptionsResolved = {
     include: [],
     exclude: [],
+    overrides: {},
     protocolImports: true,
     ...options,
     globals: {
@@ -147,9 +167,13 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     return optionsResolved.exclude.some((excludedName) => compareExcludedModuleNames(name, excludedName));
   }
 
-  const toOverride = (name: string): string | void => {
-    if (isDevEnabled(optionsResolved.globals.Buffer) && /^(?:node:)?buffer$/.test(name)) {
+  const toOverride = (name: ModuleNameWithoutNodePrefix): string | void => {
+    if (isDevEnabled(optionsResolved.globals.Buffer) && /^buffer$/.test(name)) {
       return require.resolve('buffer-polyfill')
+    }
+
+    if (name in optionsResolved.overrides) {
+      return optionsResolved.overrides[name]
     }
   }
 
@@ -165,7 +189,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         }
 
         if (!isExcluded(name)) {
-          included[name] = toOverride(name) || value
+          included[name] = toOverride(stripNodePrefix(name)) || value
         }
 
         return included
