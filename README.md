@@ -28,8 +28,6 @@ pnpm install --save-dev vite-plugin-node-polyfills
 yarn add --dev vite-plugin-node-polyfills
 ```
 
-### Zero-config by default
-
 Add the plugin to your `vite.config.ts` file.
 
 ```ts
