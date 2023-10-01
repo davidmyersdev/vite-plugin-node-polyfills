@@ -180,7 +180,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   return {
     name: 'vite-plugin-node-polyfills',
     config: (config, env) => {
-      const isDev = env.mode === 'development'
+      const isDev = env.command === 'serve'
       const polyfills = (Object.entries(stdLibBrowser) as Array<[ModuleName, string]>).reduce<Record<ModuleName, string>>((included, [name, value]) => {
         if (!optionsResolved.protocolImports) {
           if (isProtocolImport(name)) {
