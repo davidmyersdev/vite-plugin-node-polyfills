@@ -179,7 +179,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
   return {
     name: 'vite-plugin-node-polyfills',
-    config: (_config, env) => {
+    config: (config, env) => {
       const isDev = env.mode === 'development'
       const polyfills = (Object.entries(stdLibBrowser) as Array<[ModuleName, string]>).reduce<Record<ModuleName, string>>((included, [name, value]) => {
         if (!optionsResolved.protocolImports) {
@@ -199,8 +199,10 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         build: {
           rollupOptions: {
             onwarn: (warning, rollupWarn) => {
-              const warningHandler = _config.build?.rollupOptions?.onwarn ?? rollupWarn
-              handleCircularDependancyWarning(warning, warningHandler)
+              handleCircularDependancyWarning(warning, rollupWarn)
+
+              // Make sure the predefined `onwarn` handler is called too.
+              config.build?.rollupOptions?.onwarn?.(warning, rollupWarn)
             },
             plugins: [
               {
