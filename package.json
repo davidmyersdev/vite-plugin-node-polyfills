@@ -38,6 +38,10 @@
       "import": "./shims/banner/dist/index.cjs"
     }
   },
+  "files": [
+    "dist",
+    "shims"
+  ],
   "scripts": {
     "build": "run-s build:core build:shims build:shims:banner build:types",
     "build:core": "vite build",
