@@ -199,7 +199,13 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         build: {
           rollupOptions: {
             onwarn: (warning, rollupWarn) => {
-              handleCircularDependancyWarning(warning, config.build?.rollupOptions?.onwarn ?? rollupWarn)
+              handleCircularDependancyWarning(warning, () => {
+                if (config.build?.rollupOptions?.onwarn) {
+                  return config.build.rollupOptions.onwarn(warning, rollupWarn)
+                }
+
+                rollupWarn(warning)
+              })
             },
             plugins: [
               {
