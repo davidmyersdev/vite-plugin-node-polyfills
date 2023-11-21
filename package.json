@@ -69,10 +69,10 @@
     "npm-run-all": "^4.1.5",
     "rollup": "^3.29.4",
     "typescript": "4.8.3",
-    "vite": "^4.5.0",
+    "vite": "^5.0.2",
     "vite-node": "^0.34.6",
     "vite-plugin-externalize-deps": "^0.1.5",
-    "vite-plugin-inspect": "^0.6.1",
+    "vite-plugin-inspect": "^0.7.42",
     "vite-plugin-node-polyfills": "workspace:*"
   },
   "dependencies": {
@@ -82,7 +82,7 @@
     "process": "^0.11.10"
   },
   "peerDependencies": {
-    "vite": "^2.0.0 || ^3.0.0 || ^4.0.0"
+    "vite": "^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0"
   },
   "publishConfig": {
     "access": "public"
