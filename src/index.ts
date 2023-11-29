@@ -157,14 +157,14 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   }
 
   const compareExcludedModuleNames = (moduleName: string, excludedName: string) => {
-    return moduleName === excludedName || moduleName === `node:${excludedName}`;
+    return moduleName === excludedName || moduleName === `node:${excludedName}`
   }
 
   const isExcluded = (name: string) => {
     if (optionsResolved.include.length) {
-      return !optionsResolved.include.some((excludedName) => compareExcludedModuleNames(name, excludedName));
-    };
-    return optionsResolved.exclude.some((excludedName) => compareExcludedModuleNames(name, excludedName));
+      return !optionsResolved.include.some((excludedName) => compareExcludedModuleNames(name, excludedName))
+    }
+    return optionsResolved.exclude.some((excludedName) => compareExcludedModuleNames(name, excludedName))
   }
 
   const toOverride = (name: ModuleNameWithoutNodePrefix): string | void => {
@@ -228,9 +228,9 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
             banner: isDev ? { js: globalShimsBanner } : undefined,
             // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
             define: {
-              ...(isDev && isDevEnabled(optionsResolved.globals.Buffer) ? { Buffer: 'Buffer' } : {}),
-              ...(isDev && isDevEnabled(optionsResolved.globals.global) ? { global: 'global' } : {}),
-              ...(isDev && isDevEnabled(optionsResolved.globals.process) ? { process: 'process' } : {}),
+              ...((isDev && isDevEnabled(optionsResolved.globals.Buffer)) ? { Buffer: 'Buffer' } : {}),
+              ...((isDev && isDevEnabled(optionsResolved.globals.global)) ? { global: 'global' } : {}),
+              ...((isDev && isDevEnabled(optionsResolved.globals.process)) ? { process: 'process' } : {}),
             },
             inject: [
               globalShimsPath,
@@ -268,5 +268,5 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         },
       }
     },
-  } as Plugin
+  }
 }

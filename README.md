@@ -55,7 +55,7 @@ export default defineConfig({
   plugins: [
     nodePolyfills({
       // To add only specific polyfills, add them here. If no option is passed, adds all polyfills
-      include: ['path']
+      include: ['path'],
       // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
       exclude: [
         'http', // Excludes the polyfill for `http` and `node:http`.
@@ -80,8 +80,10 @@ export default defineConfig({
 
 ### All polyfills
 
-  - If protocolImports is true, also adds node:[module]
+- If protocolImports is true, also adds node:[module]
+
 ```js
+[
   '_stream_duplex',
   '_stream_passthrough',
   '_stream_readable',
@@ -122,4 +124,5 @@ export default defineConfig({
   'util',
   'vm',
   'zlib',
+]
 ```

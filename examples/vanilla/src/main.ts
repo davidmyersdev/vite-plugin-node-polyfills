@@ -1,8 +1,8 @@
+/* eslint-disable no-console */
 import { Buffer } from 'node:buffer'
 import { resolve } from 'node:path'
 import * as process from 'node:process'
-import fs from 'fs'
-import { readFileSync } from 'node:fs'
+import fs, { readFileSync } from 'node:fs'
 import { cloneDeep } from 'lodash-es'
 import { fetch } from 'ohmyfetch'
 
@@ -22,7 +22,7 @@ console.log(resolve('.'))
 console.log(process)
 console.log(process.env)
 console.log(globalThis.Array)
-console.log(Buffer.from([0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff]).readBigUInt64BE(0))
+console.log(Buffer.from([0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF]).readBigUInt64BE(0))
 console.log(Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]))
 console.log(Array)
 console.log(readFileSync('./test.txt', 'utf-8'))

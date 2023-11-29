@@ -3,8 +3,8 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
     }
   },
   "main": "./dist/index.cjs",
