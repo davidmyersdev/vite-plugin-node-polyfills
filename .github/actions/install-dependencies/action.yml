@@ -1,0 +1,27 @@
+name: Install dependencies
+description: Install and cache dependencies
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - uses: pnpm/action-setup@v2.4.0
+      with:
+        run_install: false
+        version: 8
+    - name: Get the pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+    - name: Setup the pnpm cache
+      uses: actions/cache@v3
+      with:
+        key: v1-${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        path: |
+          ${{ env.STORE_PATH }}
+        restore-keys: v1-${{ runner.os }}-pnpm-store-
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
