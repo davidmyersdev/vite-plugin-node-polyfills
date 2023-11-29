@@ -19,6 +19,7 @@ function App() {
         </button>
       </p>
       <p>
+        {/* eslint-disable-next-line n/prefer-global/buffer */}
         The following text is encoded and decoded with Buffer: {Buffer.from('Hello!').toString()}
       </p>
     </div>
@@ -32,6 +33,6 @@ export const app = () => {
         <App />
         <ReactQueryDevtools initialIsOpen={true} />
       </QueryClientProvider>
-    </React.StrictMode>
+    </React.StrictMode>,
   )
 }
