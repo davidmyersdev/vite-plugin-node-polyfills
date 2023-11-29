@@ -268,5 +268,5 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         },
       }
     },
-  } as Plugin
+  }
 }
