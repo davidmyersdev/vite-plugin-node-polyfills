@@ -139,7 +139,11 @@ const stripNodePrefix = (name: ModuleName): ModuleNameWithoutNodePrefix => {
  */
 export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   const require = createRequire(import.meta.url)
-  const globalShimsPath = require.resolve('vite-plugin-node-polyfills/shims')
+  const globalShimPaths = [
+    require.resolve('vite-plugin-node-polyfills/shims/buffer'),
+    require.resolve('vite-plugin-node-polyfills/shims/global'),
+    require.resolve('vite-plugin-node-polyfills/shims/process'),
+  ]
   const globalShimsBannerPath = require.resolve('vite-plugin-node-polyfills/shims/banner')
   const globalShimsBanner = readFileSync(globalShimsBannerPath, 'utf-8')
   const optionsResolved: PolyfillOptionsResolved = {
@@ -169,7 +173,15 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
   const toOverride = (name: ModuleNameWithoutNodePrefix): string | void => {
     if (isDevEnabled(optionsResolved.globals.Buffer) && /^buffer$/.test(name)) {
-      return require.resolve('buffer-polyfill')
+      return 'vite-plugin-node-polyfills/shims/buffer'
+    }
+
+    if (isDevEnabled(optionsResolved.globals.global) && /^global$/.test(name)) {
+      return 'vite-plugin-node-polyfills/shims/global'
+    }
+
+    if (isDevEnabled(optionsResolved.globals.process) && /^process$/.test(name)) {
+      return 'vite-plugin-node-polyfills/shims/process'
     }
 
     if (name in optionsResolved.overrides) {
@@ -211,9 +223,9 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
               {
                 ...inject({
                   // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
-                  ...(isBuildEnabled(optionsResolved.globals.Buffer) ? { Buffer: [globalShimsPath, 'Buffer'] } : {}),
-                  ...(isBuildEnabled(optionsResolved.globals.global) ? { global: [globalShimsPath, 'global'] } : {}),
-                  ...(isBuildEnabled(optionsResolved.globals.process) ? { process: [globalShimsPath, 'process'] } : {}),
+                  ...(isBuildEnabled(optionsResolved.globals.Buffer) ? { Buffer: 'vite-plugin-node-polyfills/shims/buffer' } : {}),
+                  ...(isBuildEnabled(optionsResolved.globals.global) ? { global: 'vite-plugin-node-polyfills/shims/global' } : {}),
+                  ...(isBuildEnabled(optionsResolved.globals.process) ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
                 }),
               },
             ],
@@ -224,6 +236,9 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
           banner: isDev ? globalShimsBanner : undefined,
         },
         optimizeDeps: {
+          exclude: [
+            ...globalShimPaths,
+          ],
           esbuildOptions: {
             banner: isDev ? { js: globalShimsBanner } : undefined,
             // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
@@ -233,7 +248,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
               ...((isDev && isDevEnabled(optionsResolved.globals.process)) ? { process: 'process' } : {}),
             },
             inject: [
-              globalShimsPath,
+              ...globalShimPaths,
             ],
             plugins: [
               esbuildPlugin(polyfills),
@@ -243,18 +258,20 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
                 name: 'vite-plugin-node-polyfills-shims-resolver',
                 setup(build) {
-                  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
-                  const escapedGlobalShimsPath = globalShimsPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-                  const globalShimsFilter = new RegExp(`^${escapedGlobalShimsPath}$`)
+                  for (const globalShimPath of globalShimPaths) {
+                    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+                    const escapedGlobalShimPath = globalShimPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                    const globalShimsFilter = new RegExp(`^${escapedGlobalShimPath}$`)
 
-                  // https://esbuild.github.io/plugins/#on-resolve
-                  build.onResolve({ filter: globalShimsFilter }, () => {
-                    return {
-                      // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1468
-                      external: false,
-                      path: globalShimsPath,
-                    }
-                  })
+                    // https://esbuild.github.io/plugins/#on-resolve
+                    build.onResolve({ filter: globalShimsFilter }, () => {
+                      return {
+                        // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1468
+                        external: false,
+                        path: globalShimPath,
+                      }
+                    })
+                  }
                 },
               },
             ],

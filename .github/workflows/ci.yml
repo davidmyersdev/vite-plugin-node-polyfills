@@ -28,7 +28,7 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
-      - run: pnpm build:shims:banner
+      - run: pnpm build:banner
       - run: pnpm test
   typecheck:
     needs:
@@ -39,5 +39,5 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
-      - run: pnpm build:shims:banner
+      - run: pnpm build:banner
       - run: pnpm typecheck
