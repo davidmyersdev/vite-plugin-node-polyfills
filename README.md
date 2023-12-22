@@ -126,3 +126,9 @@ export default defineConfig({
   'zlib',
 ]
 ```
+
+## About the author
+
+Hello! My name is David, and in my spare time, I build tools to help developers be more productive. If you find my work valuable, I would really appreciate a [sponsorship](https://voracious.link/sponsor) or [donation](https://voracious.link/donate). If you want to see more of my work, check out [davidmyers.dev](https://davidmyers.dev).
+
+Thanks for your support! 🪴
