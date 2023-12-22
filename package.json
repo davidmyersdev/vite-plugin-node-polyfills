@@ -33,7 +33,19 @@
     },
     "./shims/banner": {
       "require": "./shims/banner/dist/index.cjs",
-      "import": "./shims/banner/dist/index.cjs"
+      "import": "./shims/banner/dist/index.js"
+    },
+    "./shims/buffer": {
+      "require": "./shims/buffer/dist/index.cjs",
+      "import": "./shims/buffer/dist/index.js"
+    },
+    "./shims/global": {
+      "require": "./shims/global/dist/index.cjs",
+      "import": "./shims/global/dist/index.js"
+    },
+    "./shims/process": {
+      "require": "./shims/process/dist/index.cjs",
+      "import": "./shims/process/dist/index.js"
     }
   },
   "main": "./dist/index.cjs",
@@ -44,10 +56,13 @@
     "shims"
   ],
   "scripts": {
-    "build": "run-s build:core build:shims build:shims:banner build:types",
+    "build": "run-s build:core build:shims build:banner build:types",
+    "build:banner": "vite-node ./shims/banner/build.ts",
     "build:core": "vite build",
-    "build:shims": "vite build ./shims",
-    "build:shims:banner": "vite-node ./shims/banner/build.ts",
+    "build:shims": "run-p build:shims:*",
+    "build:shims:buffer": "vite build -c ./shims/vite.config.ts ./shims/buffer",
+    "build:shims:global": "vite build -c ./shims/vite.config.ts ./shims/global",
+    "build:shims:process": "vite build -c ./shims/vite.config.ts ./shims/process",
     "build:types": "run-s typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -70,16 +85,16 @@
   },
   "dependencies": {
     "@rollup/plugin-inject": "^5.0.5",
-    "buffer-polyfill": "npm:buffer@^6.0.3",
-    "node-stdlib-browser": "^1.2.0",
-    "process": "^0.11.10"
+    "node-stdlib-browser": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.18.8",
+    "buffer": "6.0.3",
     "esbuild": "^0.19.8",
     "eslint": "^8.54.0",
     "eslint-config-artisan": "^0.2.1",
     "npm-run-all": "^4.1.5",
+    "process": "^0.11.10",
     "rollup": "^4.6.0",
     "typescript": "4.8.3",
     "vite": "^5.0.2",
@@ -92,6 +107,9 @@
     "access": "public"
   },
   "pnpm": {
+    "overrides": {
+      "buffer": "6.0.3"
+    },
     "patchedDependencies": {
       "buffer@6.0.3": "patches/buffer@6.0.3.patch"
     }
