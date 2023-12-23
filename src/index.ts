@@ -159,6 +159,10 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
   }
 
   const toOverride = (name: BareModuleName): string | void => {
+    if (name in optionsResolved.overrides) {
+      return optionsResolved.overrides[name]
+    }
+
     if (/^buffer$/.test(name)) {
       return 'vite-plugin-node-polyfills/shims/buffer'
     }
@@ -169,10 +173,6 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
     if (/^process$/.test(name)) {
       return 'vite-plugin-node-polyfills/shims/process'
-    }
-
-    if (name in optionsResolved.overrides) {
-      return optionsResolved.overrides[name]
     }
   }
 
