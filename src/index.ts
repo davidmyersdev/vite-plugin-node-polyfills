@@ -5,6 +5,7 @@ import stdLibBrowser from 'node-stdlib-browser'
 import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rollup/plugin'
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import type { Plugin } from 'vite'
+import { compareModuleNames, isEnabled, isNodeProtocolImport, toRegExp, withoutNodeProtocol } from './utils'
 
 export type BuildTarget = 'build' | 'dev'
 export type BooleanOrBuildTarget = boolean | BuildTarget
@@ -87,28 +88,6 @@ export type PolyfillOptionsResolved = {
   protocolImports: boolean,
 }
 
-const isBuildEnabled = (value: BooleanOrBuildTarget) => {
-  if (!value) return false
-  if (value === true) return true
-
-  return value === 'build'
-}
-
-const isDevEnabled = (value: BooleanOrBuildTarget) => {
-  if (!value) return false
-  if (value === true) return true
-
-  return value === 'dev'
-}
-
-const isProtocolImport = (name: string) => {
-  return name.startsWith('node:')
-}
-
-const stripNodePrefix = (name: ModuleName): ModuleNameWithoutNodePrefix => {
-  return name.replace(/^node:/, '') as ModuleNameWithoutNodePrefix
-}
-
 /**
  * Returns a Vite plugin to polyfill Node's Core Modules for browser environments. Supports `node:` protocol imports.
  *
@@ -160,27 +139,24 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     },
   }
 
-  const compareExcludedModuleNames = (moduleName: string, excludedName: string) => {
-    return moduleName === excludedName || moduleName === `node:${excludedName}`
-  }
-
-  const isExcluded = (name: string) => {
-    if (optionsResolved.include.length) {
-      return !optionsResolved.include.some((excludedName) => compareExcludedModuleNames(name, excludedName))
+  const isExcluded = (moduleName: ModuleName) => {
+    if (optionsResolved.include.length > 0) {
+      return !optionsResolved.include.some((includedName) => compareModuleNames(moduleName, includedName))
     }
-    return optionsResolved.exclude.some((excludedName) => compareExcludedModuleNames(name, excludedName))
+
+    return optionsResolved.exclude.some((excludedName) => compareModuleNames(moduleName, excludedName))
   }
 
   const toOverride = (name: ModuleNameWithoutNodePrefix): string | void => {
-    if (isDevEnabled(optionsResolved.globals.Buffer) && /^buffer$/.test(name)) {
+    if (isEnabled(optionsResolved.globals.Buffer, 'dev') && /^buffer$/.test(name)) {
       return 'vite-plugin-node-polyfills/shims/buffer'
     }
 
-    if (isDevEnabled(optionsResolved.globals.global) && /^global$/.test(name)) {
+    if (isEnabled(optionsResolved.globals.global, 'dev') && /^global$/.test(name)) {
       return 'vite-plugin-node-polyfills/shims/global'
     }
 
-    if (isDevEnabled(optionsResolved.globals.process) && /^process$/.test(name)) {
+    if (isEnabled(optionsResolved.globals.process, 'dev') && /^process$/.test(name)) {
       return 'vite-plugin-node-polyfills/shims/process'
     }
 
@@ -189,23 +165,24 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     }
   }
 
+  const polyfills = (Object.entries(stdLibBrowser) as Array<[ModuleName, string]>).reduce<Record<ModuleName, string>>((included, [name, value]) => {
+    if (!optionsResolved.protocolImports) {
+      if (isNodeProtocolImport(name)) {
+        return included
+      }
+    }
+
+    if (!isExcluded(name)) {
+      included[name] = toOverride(withoutNodeProtocol(name)) || value
+    }
+
+    return included
+  }, {} as Record<ModuleName, string>)
+
   return {
     name: 'vite-plugin-node-polyfills',
     config: (config, env) => {
       const isDev = env.command === 'serve'
-      const polyfills = (Object.entries(stdLibBrowser) as Array<[ModuleName, string]>).reduce<Record<ModuleName, string>>((included, [name, value]) => {
-        if (!optionsResolved.protocolImports) {
-          if (isProtocolImport(name)) {
-            return included
-          }
-        }
-
-        if (!isExcluded(name)) {
-          included[name] = toOverride(stripNodePrefix(name)) || value
-        }
-
-        return included
-      }, {} as Record<ModuleName, string>)
 
       return {
         build: {
@@ -223,9 +200,9 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
               {
                 ...inject({
                   // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
-                  ...(isBuildEnabled(optionsResolved.globals.Buffer) ? { Buffer: 'vite-plugin-node-polyfills/shims/buffer' } : {}),
-                  ...(isBuildEnabled(optionsResolved.globals.global) ? { global: 'vite-plugin-node-polyfills/shims/global' } : {}),
-                  ...(isBuildEnabled(optionsResolved.globals.process) ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
+                  ...(isEnabled(optionsResolved.globals.Buffer, 'build') ? { Buffer: 'vite-plugin-node-polyfills/shims/buffer' } : {}),
+                  ...(isEnabled(optionsResolved.globals.global, 'build') ? { global: 'vite-plugin-node-polyfills/shims/global' } : {}),
+                  ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
                 }),
               },
             ],
@@ -243,9 +220,9 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
             banner: isDev ? { js: globalShimsBanner } : undefined,
             // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
             define: {
-              ...((isDev && isDevEnabled(optionsResolved.globals.Buffer)) ? { Buffer: 'Buffer' } : {}),
-              ...((isDev && isDevEnabled(optionsResolved.globals.global)) ? { global: 'global' } : {}),
-              ...((isDev && isDevEnabled(optionsResolved.globals.process)) ? { process: 'process' } : {}),
+              ...((isDev && isEnabled(optionsResolved.globals.Buffer, 'dev')) ? { Buffer: 'Buffer' } : {}),
+              ...((isDev && isEnabled(optionsResolved.globals.global, 'dev')) ? { global: 'global' } : {}),
+              ...((isDev && isEnabled(optionsResolved.globals.process, 'dev')) ? { process: 'process' } : {}),
             },
             inject: [
               ...globalShimPaths,
@@ -259,9 +236,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
                 name: 'vite-plugin-node-polyfills-shims-resolver',
                 setup(build) {
                   for (const globalShimPath of globalShimPaths) {
-                    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
-                    const escapedGlobalShimPath = globalShimPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-                    const globalShimsFilter = new RegExp(`^${escapedGlobalShimPath}$`)
+                    const globalShimsFilter = toRegExp(globalShimPath)
 
                     // https://esbuild.github.io/plugins/#on-resolve
                     build.onResolve({ filter: globalShimsFilter }, () => {
