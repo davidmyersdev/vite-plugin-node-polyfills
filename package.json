@@ -95,10 +95,12 @@
   },
   "dependencies": {
     "@rollup/plugin-inject": "^5.0.5",
+    "browser-resolve": "^2.0.0",
     "node-stdlib-browser": "^1.2.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.1",
+    "@types/browser-resolve": "^2.0.4",
     "@types/node": "^18.18.8",
     "buffer": "6.0.3",
     "esbuild": "^0.19.8",

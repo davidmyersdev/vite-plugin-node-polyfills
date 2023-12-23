@@ -69,7 +69,9 @@ export default defineConfig({
       // Override the default polyfills for specific modules.
       overrides: {
         // Since `fs` is not supported in browsers, we can use the `memfs` package to polyfill it.
-        fs: 'memfs',
+        'fs': 'memfs',
+        // Subpaths can be specified as well.
+        'path/posix': 'path-browserify',
       },
       // Whether to polyfill `node:` protocol imports.
       protocolImports: true,

@@ -20,6 +20,9 @@ importers:
       '@rollup/plugin-inject':
         specifier: ^5.0.5
         version: 5.0.5(rollup@4.6.0)
+      browser-resolve:
+        specifier: ^2.0.0
+        version: 2.0.0
       node-stdlib-browser:
         specifier: ^1.2.0
         version: 1.2.0
@@ -27,6 +30,9 @@ importers:
       '@playwright/test':
         specifier: ^1.40.1
         version: 1.40.1
+      '@types/browser-resolve':
+        specifier: ^2.0.4
+        version: 2.0.4
       '@types/node':
         specifier: ^18.18.8
         version: 18.18.8
@@ -675,6 +681,9 @@ packages:
   '@types/babel__traverse@7.20.3':
     resolution: {integrity: sha512-Lsh766rGEFbaxMIDH7Qa+Yha8cMVI3qAK6CHt3OR0YfxOIn5Z54iHiyDRycHrBqeIiqGa20Kpsv1cavfBKkRSw==}
 
+  '@types/browser-resolve@2.0.4':
+    resolution: {integrity: sha512-6qR8ne4oBrfDcM1ZM+CY+OY29zQ22+7bgrLDDCeyt7QNqyIh+tJkmnN18dg7PrxnEVy3YG7Gs61NQJvOc5tTpA==}
+
   '@types/estree@1.0.4':
     resolution: {integrity: sha512-2JwWnHK9H+wUZNorf2Zr6ves96WHoWDJIftkcxPKsS7Djta6Zu519LarhRNljPXkpsZR2ZMwNCPeW7omW07BJw==}
 
@@ -710,6 +719,9 @@ packages:
 
   '@types/react@18.2.34':
     resolution: {integrity: sha512-U6eW/alrRk37FU/MS2RYMjx0Va2JGIVXELTODaTIYgvWGCV4Y4TfTUzG8DdmpDNIT0Xpj/R7GfyHOJJrDttcvg==}
+
+  '@types/resolve@1.20.6':
+    resolution: {integrity: sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ==}
 
   '@types/scheduler@0.16.5':
     resolution: {integrity: sha512-s/FPdYRmZR8SjLWGMCuax7r3qCWQw9QKHzXVukAuuIJkXkDRwp+Pu5LMIVFi0Fxbav35WURicYr8u1QsoybnQw==}
@@ -1935,6 +1947,7 @@ packages:
 
   lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -3370,6 +3383,10 @@ snapshots:
     dependencies:
       '@babel/types': 7.23.0
 
+  '@types/browser-resolve@2.0.4':
+    dependencies:
+      '@types/resolve': 1.20.6
+
   '@types/estree@1.0.4': {}
 
   '@types/estree@1.0.5': {}
@@ -3405,6 +3422,8 @@ snapshots:
       '@types/prop-types': 15.7.9
       '@types/scheduler': 0.16.5
       csstype: 3.1.2
+
+  '@types/resolve@1.20.6': {}
 
   '@types/scheduler@0.16.5': {}
 
