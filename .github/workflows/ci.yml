@@ -19,6 +19,18 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - name: Run the linter
         run: pnpm lint
+  test-e2e:
+    needs:
+      - install-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/install-dependencies
+      - run: pnpm build:core
+      - run: pnpm build:shims
+      - run: pnpm build:banner
+      - run: pnpm playwright install --with-deps
+      - run: pnpm -r test
   test-unit:
     needs:
       - install-dependencies
@@ -29,7 +41,7 @@ jobs:
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm build:banner
-      - run: pnpm test
+      - run: pnpm test:build
   typecheck:
     needs:
       - install-dependencies

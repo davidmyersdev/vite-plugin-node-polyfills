@@ -1,5 +1,10 @@
 *.log
 .DS_Store
+.cache
+/*.tgz
+blob-report
 dist
 node_modules
-package.tgz
+playwright-report
+test-results
+tmp

@@ -4,12 +4,17 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
+    "test": "CI=true run-p test:build test:dev",
+    "test:build": "VITE_COMMAND=build WEB_SERVER_COMMAND='vite build && vite preview --port 5174' WEB_SERVER_URL='http://localhost:5174' playwright test",
+    "test:dev": "VITE_COMMAND=dev WEB_SERVER_COMMAND='vite dev' WEB_SERVER_URL='http://localhost:5173' playwright test",
     "typecheck": "tsc"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^18.18.8",
     "lodash-es": "^4.17.21",
     "memfs": "^4.6.0",
+    "npm-run-all": "^4.1.5",
     "ohmyfetch": "^0.4.21",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
