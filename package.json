@@ -88,6 +88,7 @@
     "node-stdlib-browser": "^1.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "@types/node": "^18.18.8",
     "buffer": "6.0.3",
     "esbuild": "^0.19.8",
@@ -108,7 +109,8 @@
   },
   "pnpm": {
     "overrides": {
-      "buffer": "6.0.3"
+      "buffer": "6.0.3",
+      "vite": "^5.0.2"
     },
     "patchedDependencies": {
       "buffer@6.0.3": "patches/buffer@6.0.3.patch"
