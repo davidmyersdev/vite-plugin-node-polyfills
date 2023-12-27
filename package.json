@@ -35,11 +35,23 @@
       "require": "./shims/buffer/dist/index.cjs",
       "import": "./shims/buffer/dist/index.js"
     },
+    "./shims/buffer/": {
+      "require": "./shims/buffer/dist/index.cjs",
+      "import": "./shims/buffer/dist/index.js"
+    },
     "./shims/global": {
       "require": "./shims/global/dist/index.cjs",
       "import": "./shims/global/dist/index.js"
     },
+    "./shims/global/": {
+      "require": "./shims/global/dist/index.cjs",
+      "import": "./shims/global/dist/index.js"
+    },
     "./shims/process": {
+      "require": "./shims/process/dist/index.cjs",
+      "import": "./shims/process/dist/index.js"
+    },
+    "./shims/process/": {
       "require": "./shims/process/dist/index.cjs",
       "import": "./shims/process/dist/index.js"
     }
