@@ -31,10 +31,6 @@
       "require": "./shims/dist/index.cjs",
       "import": "./shims/dist/index.js"
     },
-    "./shims/banner": {
-      "require": "./shims/banner/dist/index.cjs",
-      "import": "./shims/banner/dist/index.js"
-    },
     "./shims/buffer": {
       "require": "./shims/buffer/dist/index.cjs",
       "import": "./shims/buffer/dist/index.js"
@@ -56,8 +52,7 @@
     "shims"
   ],
   "scripts": {
-    "build": "run-s build:core build:shims build:banner build:types",
-    "build:banner": "vite-node ./shims/banner/build.ts",
+    "build": "run-s build:core build:shims build:types",
     "build:core": "vite build",
     "build:shims": "run-p build:shims:*",
     "build:shims:buffer": "vite build -c ./shims/vite.config.ts ./shims/buffer",

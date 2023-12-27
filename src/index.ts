@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import inject from '@rollup/plugin-inject'
 import stdLibBrowser from 'node-stdlib-browser'
@@ -88,6 +87,17 @@ export type PolyfillOptionsResolved = {
   protocolImports: boolean,
 }
 
+const globalShimsBanner = [
+  `import __buffer_polyfill from 'vite-plugin-node-polyfills/shims/buffer'`,
+  `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global'`,
+  `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process'`,
+  ``,
+  `globalThis.Buffer = globalThis.Buffer || __buffer_polyfill`,
+  `globalThis.global = globalThis.global || __global_polyfill`,
+  `globalThis.process = globalThis.process || __process_polyfill`,
+  ``,
+].join('\n')
+
 /**
  * Returns a Vite plugin to polyfill Node's Core Modules for browser environments. Supports `node:` protocol imports.
  *
@@ -123,8 +133,6 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     require.resolve('vite-plugin-node-polyfills/shims/global'),
     require.resolve('vite-plugin-node-polyfills/shims/process'),
   ]
-  const globalShimsBannerPath = require.resolve('vite-plugin-node-polyfills/shims/banner')
-  const globalShimsBanner = readFileSync(globalShimsBannerPath, 'utf-8')
   const optionsResolved: PolyfillOptionsResolved = {
     include: [],
     exclude: [],
@@ -232,7 +240,6 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
               // Supress the 'injected path "..." cannot be marked as external' error in Vite 4 (emitted by esbuild).
               // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1469
               {
-
                 name: 'vite-plugin-node-polyfills-shims-resolver',
                 setup(build) {
                   for (const globalShimPath of globalShimPaths) {
