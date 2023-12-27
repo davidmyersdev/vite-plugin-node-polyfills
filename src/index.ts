@@ -1,15 +1,19 @@
-import { createRequire } from 'node:module'
 import inject from '@rollup/plugin-inject'
+import browserResolve from 'browser-resolve'
 import stdLibBrowser from 'node-stdlib-browser'
 import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rollup/plugin'
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import type { Plugin } from 'vite'
-import { compareModuleNames, isEnabled, isNodeProtocolImport, toRegExp, withoutNodeProtocol } from './utils'
+import { compareModuleNames, isEnabled, isNodeProtocolImport, resolvePolyfill, toEntries, toRegExp, withoutNodeProtocol } from './utils'
 
-export type BuildTarget = 'build' | 'dev'
+export type BareModuleName<T = ModuleName> = T extends `node:${infer P}` ? P : never
+export type BareModuleNameWithSubpath<T = ModuleName> = T extends `node:${infer P}` ? `${P}/${string}` : never
 export type BooleanOrBuildTarget = boolean | BuildTarget
+export type BuildTarget = 'build' | 'dev'
 export type ModuleName = keyof typeof stdLibBrowser
-export type ModuleNameWithoutNodePrefix<T = ModuleName> = T extends `node:${infer P}` ? P : never
+export type OverrideOptions = {
+
+}
 
 export type PolyfillOptions = {
   /**
@@ -22,7 +26,7 @@ export type PolyfillOptions = {
    * })
    * ```
   */
-  include?: ModuleNameWithoutNodePrefix[],
+  include?: BareModuleName[],
   /**
    * @example
    *
@@ -32,7 +36,7 @@ export type PolyfillOptions = {
    * })
    * ```
    */
-  exclude?: ModuleNameWithoutNodePrefix[],
+  exclude?: BareModuleName[],
   /**
    * Specify whether specific globals should be polyfilled.
    *
@@ -66,7 +70,7 @@ export type PolyfillOptions = {
    * })
    * ```
    */
-  overrides?: { [Key in ModuleNameWithoutNodePrefix]?: string },
+  overrides?: { [Key in BareModuleName | BareModuleNameWithSubpath]?: string },
   /**
    * Specify whether the Node protocol version of an import (e.g. `node:buffer`) should be polyfilled too.
    *
@@ -76,14 +80,14 @@ export type PolyfillOptions = {
 }
 
 export type PolyfillOptionsResolved = {
-  include: ModuleNameWithoutNodePrefix[],
-  exclude: ModuleNameWithoutNodePrefix[],
+  include: BareModuleName[],
+  exclude: BareModuleName[],
   globals: {
     Buffer: BooleanOrBuildTarget,
     global: BooleanOrBuildTarget,
     process: BooleanOrBuildTarget,
   },
-  overrides: { [Key in ModuleNameWithoutNodePrefix]?: string },
+  overrides: { [Key in BareModuleName | BareModuleNameWithSubpath]?: string },
   protocolImports: boolean,
 }
 
@@ -127,11 +131,10 @@ const globalShimsBanner = [
  * ```
  */
 export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
-  const require = createRequire(import.meta.url)
   const globalShimPaths = [
-    require.resolve('vite-plugin-node-polyfills/shims/buffer'),
-    require.resolve('vite-plugin-node-polyfills/shims/global'),
-    require.resolve('vite-plugin-node-polyfills/shims/process'),
+    'vite-plugin-node-polyfills/shims/buffer',
+    'vite-plugin-node-polyfills/shims/global',
+    'vite-plugin-node-polyfills/shims/process',
   ]
   const optionsResolved: PolyfillOptionsResolved = {
     include: [],
@@ -155,21 +158,21 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     return optionsResolved.exclude.some((excludedName) => compareModuleNames(moduleName, excludedName))
   }
 
-  const toOverride = (name: ModuleNameWithoutNodePrefix): string | void => {
-    if (isEnabled(optionsResolved.globals.Buffer, 'dev') && /^buffer$/.test(name)) {
+  const toOverride = (name: BareModuleName): string | void => {
+    if (name in optionsResolved.overrides) {
+      return optionsResolved.overrides[name]
+    }
+
+    if (/^buffer$/.test(name)) {
       return 'vite-plugin-node-polyfills/shims/buffer'
     }
 
-    if (isEnabled(optionsResolved.globals.global, 'dev') && /^global$/.test(name)) {
+    if (/^global$/.test(name)) {
       return 'vite-plugin-node-polyfills/shims/global'
     }
 
-    if (isEnabled(optionsResolved.globals.process, 'dev') && /^process$/.test(name)) {
+    if (/^process$/.test(name)) {
       return 'vite-plugin-node-polyfills/shims/process'
-    }
-
-    if (name in optionsResolved.overrides) {
-      return optionsResolved.overrides[name]
     }
   }
 
@@ -189,6 +192,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
   return {
     name: 'vite-plugin-node-polyfills',
+    enforce: 'pre',
     config: (config, env) => {
       const isDev = env.command === 'serve'
 
@@ -236,21 +240,25 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
               ...globalShimPaths,
             ],
             plugins: [
-              esbuildPlugin(polyfills),
+              esbuildPlugin({
+                ...polyfills,
+              }),
               // Supress the 'injected path "..." cannot be marked as external' error in Vite 4 (emitted by esbuild).
               // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1469
               {
                 name: 'vite-plugin-node-polyfills-shims-resolver',
-                setup(build) {
+                setup: (build) => {
                   for (const globalShimPath of globalShimPaths) {
                     const globalShimsFilter = toRegExp(globalShimPath)
 
                     // https://esbuild.github.io/plugins/#on-resolve
                     build.onResolve({ filter: globalShimsFilter }, () => {
+                      const resolved = browserResolve.sync(globalShimPath)
+
                       return {
                         // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1468
                         external: false,
-                        path: globalShimPath,
+                        path: resolved,
                       }
                     })
                   }
@@ -265,6 +273,29 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
             ...polyfills,
           },
         },
+      }
+    },
+    async resolveId(id) {
+      for (const [moduleName, modulePath] of toEntries(polyfills)) {
+        if (id.startsWith(modulePath)) {
+          // Grab the subpath without the forward slash. E.g. `path/posix` -> `posix`
+          const moduleSubpath = id.slice(modulePath.length + 1)
+
+          if (moduleSubpath.length > 0) {
+            const moduleNameWithoutProtocol = withoutNodeProtocol(moduleName)
+            const overrideName = `${moduleNameWithoutProtocol}/${moduleSubpath}` as const
+            const override = optionsResolved.overrides[overrideName]
+
+            if (!override) {
+              // Todo: Maybe throw error?
+              return undefined
+            }
+
+            return await resolvePolyfill(this, override)
+          }
+
+          return browserResolve.sync(modulePath)
+        }
       }
     },
   }
