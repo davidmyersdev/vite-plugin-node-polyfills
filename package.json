@@ -73,7 +73,7 @@
     "build:types": "run-s typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "run-s test:build",
+    "test": "run-p test:build test:unit",
     "test:build": "run-p test:build:*",
     "test:build:react": "pnpm -C ./examples/react run build",
     "test:build:vanilla": "pnpm -C ./examples/vanilla run build",
@@ -81,6 +81,7 @@
     "test:dev:react": "pnpm -C ./examples/react run dev",
     "test:dev:vanilla": "pnpm -C ./examples/vanilla run dev",
     "test:dev:vue": "pnpm -C ./examples/vue run dev",
+    "test:unit": "vitest run --dir ./test",
     "typecheck": "run-p typecheck:*",
     "typecheck:core": "tsc",
     "typecheck:react": "pnpm -C ./examples/react run typecheck",
@@ -109,7 +110,8 @@
     "vite-node": "^0.34.6",
     "vite-plugin-externalize-deps": "^0.1.5",
     "vite-plugin-inspect": "^0.7.42",
-    "vite-plugin-node-polyfills": "workspace:*"
+    "vite-plugin-node-polyfills": "workspace:*",
+    "vitest": "^1.1.0"
   },
   "publishConfig": {
     "access": "public"
