@@ -14,8 +14,11 @@ const something = {
   },
 }
 
+class Symbol {}
+
 fs.writeFileSync('./test.txt', 'Hello from fs!', 'utf-8')
 
+console.log(Symbol)
 console.log(fs)
 console.log(fetch)
 console.log(resolve('.'))
