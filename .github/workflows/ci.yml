@@ -28,7 +28,6 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
-      - run: pnpm build:banner
       - run: pnpm playwright install --with-deps
       - run: pnpm -r test
   test-unit:
@@ -40,7 +39,6 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
-      - run: pnpm build:banner
       - run: pnpm test:build
   typecheck:
     needs:
@@ -51,5 +49,4 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
-      - run: pnpm build:banner
       - run: pnpm typecheck

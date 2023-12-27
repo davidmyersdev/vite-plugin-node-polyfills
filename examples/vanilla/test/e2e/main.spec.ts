@@ -25,6 +25,7 @@ test('logs the correct values', async ({ page }) => {
 
   if (isBuild) {
     expect(logs).toEqual([
+      'class Symbol {\n    }',
       '{Volume: , vol: Volume, createFsFromVolume: , fs: Object, memfs: }',
       'function fetch() { [native code] }',
       '/',
@@ -43,6 +44,7 @@ test('logs the correct values', async ({ page }) => {
     expect(logs).toEqual([
       '[vite] connecting...',
       '[vite] connected.',
+      'class Symbol {\n}',
       '{Volume: , vol: _Volume, createFsFromVolume: , fs: Object, memfs: }',
       'function fetch() { [native code] }',
       '/',
