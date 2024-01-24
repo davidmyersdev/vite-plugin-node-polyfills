@@ -3,6 +3,9 @@
   "type": "module",
   "version": "0.19.0",
   "packageManager": "pnpm@8.4.0",
+  "engines": {
+    "pnpm": ">=6.0.0"
+  },
   "description": "A Vite plugin to polyfill Node's Core Modules for browser environments.",
   "author": "David Myers <hello@davidmyers.dev>",
   "license": "MIT",
