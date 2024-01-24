@@ -1,5 +1,5 @@
-// eslint-disable-next-line unicorn/prefer-node-protocol
-import { Buffer } from 'buffer'
+// eslint-disable-next-line unicorn/prefer-node-protocol, n/no-deprecated-api
+import { Buffer, SlowBuffer, kMaxLength } from 'buffer'
 
-export { Buffer }
+export { Buffer, SlowBuffer, kMaxLength }
 export default Buffer
