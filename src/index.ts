@@ -4,8 +4,19 @@ import browserResolve from 'browser-resolve'
 import stdLibBrowser from 'node-stdlib-browser'
 import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rollup/plugin'
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
+import { packageDirectorySync } from 'pkg-dir'
+import { importMetaResolve } from 'resolve-esm'
 import type { Plugin } from 'vite'
-import { compareModuleNames, isEnabled, isNodeProtocolImport, resolvePolyfill, toEntries, toRegExp, withoutNodeProtocol } from './utils'
+import {
+  compareModuleNames,
+  isEnabled,
+  isNodeProtocolImport,
+  resolve,
+  resolvePolyfill,
+  toEntries,
+  toRegExp,
+  withoutNodeProtocol,
+} from './utils'
 
 export type BareModuleName<T = ModuleName> = T extends `node:${infer P}` ? P : never
 export type BareModuleNameWithSubpath<T = ModuleName> = T extends `node:${infer P}` ? `${P}/${string}` : never
@@ -266,6 +277,9 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
                     // https://esbuild.github.io/plugins/#on-resolve
                     build.onResolve({ filter: globalShimsFilter }, () => {
                       const resolved = browserResolve.sync(globalShimPath)
+                      const newResolved = importMetaResolve(globalShimPath)
+
+                      console.log(newResolved)
 
                       return {
                         // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1468
@@ -306,7 +320,18 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
             return await resolvePolyfill(this, override)
           }
 
-          return browserResolve.sync(modulePath)
+          const newResolved = new URL(importMetaResolve(modulePath))
+
+          console.log('importMetaResolve', newResolved)
+          console.log('resolve', resolve(moduleName))
+
+          const resolved = browserResolve.sync(modulePath)
+          const pkgDir = packageDirectorySync({ cwd: resolved })
+
+          console.log('browserResolve', resolved)
+          console.log('pkgDir', pkgDir)
+
+          return resolved
         }
       }
     },

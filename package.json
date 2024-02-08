@@ -98,7 +98,9 @@
   "dependencies": {
     "@rollup/plugin-inject": "^5.0.5",
     "browser-resolve": "^2.0.0",
-    "node-stdlib-browser": "^1.2.0"
+    "node-stdlib-browser": "^1.2.0",
+    "pkg-dir": "^8.0.0",
+    "resolve-esm": "^2.0.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.1",

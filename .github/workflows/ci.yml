@@ -29,7 +29,8 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
-      - run: pnpm -r test
+      - run: pnpm test:unit
+      - run: pnpm test:build
   typecheck:
     runs-on: ubuntu-latest
     steps:

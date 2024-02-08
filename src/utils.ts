@@ -1,3 +1,4 @@
+import { importMetaResolve } from 'resolve-esm'
 import type { PluginContext } from 'rollup'
 import type { BareModuleName, BooleanOrBuildTarget, ModuleName } from './index'
 
@@ -17,6 +18,20 @@ export const isEnabled = (value: BooleanOrBuildTarget, mode: 'build' | 'dev') =>
 
 export const isNodeProtocolImport = (name: string) => {
   return name.startsWith('node:')
+}
+
+export const resolve = (name: string) => {
+  const consumerResolved = importMetaResolve(name, process.cwd())
+
+  if (consumerResolved) {
+    return consumerResolved
+  }
+
+  const providerResolved = importMetaResolve(name)
+
+  if (providerResolved) {
+    return providerResolved
+  }
 }
 
 export const resolvePolyfill = async (context: PluginContext, name: string) => {
