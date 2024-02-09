@@ -1,0 +1,12 @@
+{
+  "name": "vite-scan-buffer-import-error",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "vite optimize"
+  },
+  "devDependencies": {
+    "vite-plugin-node-polyfills": "workspace:*",
+    "vite@5.1.0": "npm:vite@5.1.0"
+  }
+}
