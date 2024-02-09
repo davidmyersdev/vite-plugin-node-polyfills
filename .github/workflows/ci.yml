@@ -29,7 +29,7 @@ jobs:
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm playwright install --with-deps
-      - run: pnpm -r test
+      - run: pnpm -r test:e2e
   test-unit:
     needs:
       - install-dependencies
@@ -39,7 +39,7 @@ jobs:
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
-      - run: pnpm test:build
+      - run: pnpm -r test
   typecheck:
     needs:
       - install-dependencies

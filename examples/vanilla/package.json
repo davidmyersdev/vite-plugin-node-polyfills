@@ -4,9 +4,9 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "test": "CI=true run-p test:build test:dev",
-    "test:build": "VITE_COMMAND=build WEB_SERVER_COMMAND='vite build && vite preview --port 15174' WEB_SERVER_URL='http://localhost:15174' playwright test",
-    "test:dev": "VITE_COMMAND=dev WEB_SERVER_COMMAND='vite dev --port 15173' WEB_SERVER_URL='http://localhost:15173' playwright test",
+    "test:e2e": "CI=true run-p test:e2e:*",
+    "test:e2e:build": "VITE_COMMAND=build WEB_SERVER_COMMAND='vite build && vite preview --port 15174' WEB_SERVER_URL='http://localhost:15174' playwright test",
+    "test:e2e:dev": "VITE_COMMAND=dev WEB_SERVER_COMMAND='vite dev --port 15173' WEB_SERVER_URL='http://localhost:15173' playwright test",
     "typecheck": "tsc"
   },
   "devDependencies": {
