@@ -1,0 +1,20 @@
+{
+  "name": "missing-zlib-imports",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "test:e2e": "CI=true run-p test:e2e:*",
+    "test:e2e:build": "VITE_COMMAND=build WEB_SERVER_COMMAND='vite build && vite preview --port 15176' WEB_SERVER_URL='http://localhost:15176' playwright test",
+    "test:e2e:dev": "VITE_COMMAND=dev WEB_SERVER_COMMAND='vite dev --port 15175' WEB_SERVER_URL='http://localhost:15175' playwright test"
+  },
+  "dependencies": {
+    "fast-zlib": "^2.0.1",
+    "vite-plugin-node-polyfills": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^5.1.1"
+  }
+}
