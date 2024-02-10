@@ -160,6 +160,19 @@ importers:
         specifier: ^3.3.7
         version: 3.3.7(typescript@5.2.2)
 
+  test/error-repros/missing-zlib-imports:
+    dependencies:
+      fast-zlib:
+        specifier: ^2.0.1
+        version: 2.0.1
+      vite-plugin-node-polyfills:
+        specifier: workspace:*
+        version: link:../../..
+    devDependencies:
+      vite:
+        specifier: ^5.0.2
+        version: 5.1.0(@types/node@18.18.8)
+
   test/error-repros/vite-scan-buffer-import-error:
     devDependencies:
       vite-plugin-node-polyfills:
@@ -2710,6 +2723,10 @@ packages:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
     dev: true
 
+  /fast-zlib@2.0.1:
+    resolution: {integrity: sha512-DCoYgNagM2Bt1VIpXpdGnRx4LzqJeYG0oh6Nf/7cWo6elTXkFGMw9CrRCYYUIapYNrozYMoyDRflx9mgT3Awyw==}
+    dev: false
+
   /fastq@1.15.0:
     resolution: {integrity: sha512-wBrocU2LCXXa+lWBt8RoIRD89Fi8OdABODa/kEnyeyjS5aZO5/GNvI5sEINADqP/h8M29UHTHUb53sUu5Ihqdw==}
     dependencies:
@@ -4871,7 +4888,7 @@ packages:
       mlly: 1.4.2
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 5.0.2(@types/node@18.18.8)
+      vite: 5.1.0(@types/node@18.18.8)
     transitivePeerDependencies:
       - '@types/node'
       - less
