@@ -1,5 +1,5 @@
 import { createServer } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { nodePolyfills, PolyfillOptions } from 'vite-plugin-node-polyfills'
 
 /**
  * Format code by removing the smallest indentation from each line.
@@ -25,14 +25,14 @@ export const formatWhitespace = (code: string) => {
   return `${formatted}\n`
 }
 
-export const transformDev = async (code: string) => {
+export const transformDev = async (code: string, options?: PolyfillOptions) => {
   const server = await createServer({
     configFile: false,
     esbuild: {
       format: 'esm',
     },
     plugins: [
-      nodePolyfills(),
+      nodePolyfills(options),
       {
         name: 'test-code-loader',
         load(id) {

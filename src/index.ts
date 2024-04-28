@@ -87,16 +87,20 @@ export type PolyfillOptionsResolved = {
   protocolImports: boolean,
 }
 
-const globalShimsBanner = [
-  `import __buffer_polyfill from 'vite-plugin-node-polyfills/shims/buffer'`,
-  `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global'`,
-  `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process'`,
-  ``,
-  `globalThis.Buffer = globalThis.Buffer || __buffer_polyfill`,
-  `globalThis.global = globalThis.global || __global_polyfill`,
-  `globalThis.process = globalThis.process || __process_polyfill`,
-  ``,
-].join('\n')
+const globalShimBanners = {
+  buffer: [
+    `import __buffer_polyfill from 'vite-plugin-node-polyfills/shims/buffer'`,
+    `globalThis.Buffer = globalThis.Buffer || __buffer_polyfill`,
+  ],
+  global: [
+    `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global'`,
+    `globalThis.global = globalThis.global || __global_polyfill`,
+  ],
+  process: [
+    `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process'`,
+    `globalThis.process = globalThis.process || __process_polyfill`,
+  ],
+}
 
 /**
  * Returns a Vite plugin to polyfill Node's Core Modules for browser environments. Supports `node:` protocol imports.
@@ -127,12 +131,6 @@ const globalShimsBanner = [
  * ```
  */
 export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
-  const require = createRequire(import.meta.url)
-  const globalShimPaths = [
-    require.resolve('vite-plugin-node-polyfills/shims/buffer'),
-    require.resolve('vite-plugin-node-polyfills/shims/global'),
-    require.resolve('vite-plugin-node-polyfills/shims/process'),
-  ]
   const optionsResolved: PolyfillOptionsResolved = {
     include: [],
     exclude: [],
@@ -186,6 +184,20 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
     return included
   }, {} as Record<ModuleName, string>)
+
+  const require = createRequire(import.meta.url)
+  const globalShimPaths = [
+    ...((isEnabled(optionsResolved.globals.Buffer, 'dev')) ? [require.resolve('vite-plugin-node-polyfills/shims/buffer')] : []),
+    ...((isEnabled(optionsResolved.globals.global, 'dev')) ? [require.resolve('vite-plugin-node-polyfills/shims/global')] : []),
+    ...((isEnabled(optionsResolved.globals.process, 'dev')) ? [require.resolve('vite-plugin-node-polyfills/shims/process')] : []),
+  ]
+
+  const globalShimsBanner = [
+    ...((isEnabled(optionsResolved.globals.Buffer, 'dev')) ? globalShimBanners.buffer : []),
+    ...((isEnabled(optionsResolved.globals.global, 'dev')) ? globalShimBanners.global : []),
+    ...((isEnabled(optionsResolved.globals.process, 'dev')) ? globalShimBanners.process : []),
+    ``,
+  ].join('\n')
 
   return {
     name: 'vite-plugin-node-polyfills',
