@@ -1,5 +1,6 @@
 import { createServer } from 'vite'
-import { nodePolyfills, PolyfillOptions } from 'vite-plugin-node-polyfills'
+import type { PolyfillOptions } from 'vite-plugin-node-polyfills'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 /**
  * Format code by removing the smallest indentation from each line.
