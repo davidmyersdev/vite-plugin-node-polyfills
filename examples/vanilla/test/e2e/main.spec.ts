@@ -29,7 +29,7 @@ test('logs the correct values', async ({ page }) => {
       '{Volume: , vol: Volume, createFsFromVolume: , fs: Object, memfs: }',
       'function fetch() { [native code] }',
       '/',
-      'Module',
+      '{nextTick: , title: browser, browser: true, env: Object, argv: Array(0)}',
       '{}',
       'function Array() { [native code] }',
       '4294967295',

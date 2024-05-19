@@ -1,0 +1,23 @@
+{
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "test:e2e": "CI=true run-p test:e2e:*",
+    "test:e2e:build": "VITE_COMMAND=build WEB_SERVER_COMMAND='vite build && vite preview --port 15178' WEB_SERVER_URL='http://localhost:15178' playwright test",
+    "test:e2e:dev": "VITE_COMMAND=dev WEB_SERVER_COMMAND='vite dev --port 15177' WEB_SERVER_URL='http://localhost:15177' playwright test",
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^18.18.8",
+    "lodash-es": "^4.17.21",
+    "memfs": "^4.6.0",
+    "npm-run-all": "^4.1.5",
+    "ohmyfetch": "^0.4.21",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vite-plugin-node-polyfills": "workspace:*"
+  }
+}
