@@ -94,7 +94,7 @@ const globalShimBanners = {
   ],
   global: [
     `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global'`,
-    `globalThis.global = { ...__global_polyfill, ...globalThis.global }`,
+    `globalThis.global = globalThis.global || __global_polyfill`,
   ],
   process: [
     `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process'`,
