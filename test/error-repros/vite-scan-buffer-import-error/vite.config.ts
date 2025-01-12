@@ -1,4 +1,4 @@
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { nodePolyfills } from 'vite-plugin-node-polyfill'
 
 export default {
   optimizeDeps: {

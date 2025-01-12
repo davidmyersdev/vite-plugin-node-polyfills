@@ -6,7 +6,7 @@
     "test": "vite optimize"
   },
   "devDependencies": {
-    "vite-plugin-node-polyfills": "workspace:*",
+    "vite-plugin-node-polyfill": "workspace:*",
     "vite@5.1.0": "npm:vite@5.1.0"
   }
 }

@@ -1,7 +1,7 @@
 [![Sponsor me](https://img.shields.io/badge/sponsor-DB61A2?style=for-the-badge&logo=GitHub-Sponsors&logoColor=white)](https://voracious.link/sponsor)
 [![Donate](https://img.shields.io/badge/donate-FF5F5F?style=for-the-badge&logo=ko-fi&logoColor=white)](https://voracious.link/donate)
 
-# vite-plugin-node-polyfills
+# vite-plugin-node-polyfill
 
 A Vite plugin to polyfill Node's Core Modules for browser environments. Supports [`node:` protocol imports](https://nodejs.org/dist/latest-v16.x/docs/api/esm.html#node-imports).
 
@@ -19,20 +19,20 @@ Install the package as a dev dependency.
 
 ```sh
 # npm
-npm install --save-dev vite-plugin-node-polyfills
+npm install --save-dev vite-plugin-node-polyfill
 
 # pnpm
-pnpm install --save-dev vite-plugin-node-polyfills
+pnpm install --save-dev vite-plugin-node-polyfill
 
 # yarn
-yarn add --dev vite-plugin-node-polyfills
+yarn add --dev vite-plugin-node-polyfill
 ```
 
 Add the plugin to your `vite.config.ts` file.
 
 ```ts
 import { defineConfig } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { nodePolyfills } from 'vite-plugin-node-polyfill'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -48,7 +48,7 @@ The following options are available to customize it for your needs.
 
 ```ts
 import { defineConfig } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { nodePolyfills } from 'vite-plugin-node-polyfill'
 
 // https://vitejs.dev/config/
 export default defineConfig({

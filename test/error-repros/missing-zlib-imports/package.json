@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "fast-zlib": "^2.0.1",
-    "vite-plugin-node-polyfills": "workspace:*"
+    "vite-plugin-node-polyfill": "workspace:*"
   },
   "devDependencies": {
     "vite": "^5.1.1"
