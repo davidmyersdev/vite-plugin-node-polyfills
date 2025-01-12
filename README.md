@@ -1,5 +1,4 @@
-[![Sponsor me](https://img.shields.io/badge/sponsor-DB61A2?style=for-the-badge&logo=GitHub-Sponsors&logoColor=white)](https://voracious.link/sponsor)
-[![Donate](https://img.shields.io/badge/donate-FF5F5F?style=for-the-badge&logo=ko-fi&logoColor=white)](https://voracious.link/donate)
+> This is a fork of [vite-plugin-node-polyfills](https://github.com/davidmyersdev/vite-plugin-node-polyfills) updated for Vite 6 compatibility.
 
 # vite-plugin-node-polyfill
 
