@@ -6,47 +6,34 @@ on:
       - main
   workflow_dispatch:
 jobs:
-  install-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/install-dependencies
   lint:
-    needs:
-      - install-dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/install-dependencies
       - name: Run the linter
         run: pnpm lint
   test-e2e:
-    needs:
-      - install-dependencies
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm playwright install --with-deps
       - run: pnpm -r test:e2e
   test-unit:
-    needs:
-      - install-dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm -r test
   typecheck:
-    needs:
-      - install-dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
