@@ -204,6 +204,13 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     config: (config, env) => {
       const isDev = env.command === 'serve'
 
+      const shimsToInject = {
+        // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
+        ...(isEnabled(optionsResolved.globals.Buffer, 'build') ? { Buffer: 'vite-plugin-node-polyfills/shims/buffer' } : {}),
+        ...(isEnabled(optionsResolved.globals.global, 'build') ? { global: 'vite-plugin-node-polyfills/shims/global' } : {}),
+        ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
+      }
+
       return {
         build: {
           rollupOptions: {
@@ -216,16 +223,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
                 rollupWarn(warning)
               })
             },
-            plugins: [
-              {
-                ...inject({
-                  // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
-                  ...(isEnabled(optionsResolved.globals.Buffer, 'build') ? { Buffer: 'vite-plugin-node-polyfills/shims/buffer' } : {}),
-                  ...(isEnabled(optionsResolved.globals.global, 'build') ? { global: 'vite-plugin-node-polyfills/shims/global' } : {}),
-                  ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
-                }),
-              },
-            ],
+            plugins: Object.keys(shimsToInject).length > 0 ? [inject(shimsToInject)] : [],
           },
         },
         esbuild: {
