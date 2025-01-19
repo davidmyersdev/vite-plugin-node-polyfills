@@ -1,8 +1,9 @@
 import { createRequire } from 'node:module'
-import inject from '@rollup/plugin-inject'
+import rollupInject from '@rollup/plugin-inject'
 import stdLibBrowser from 'node-stdlib-browser'
 import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rollup/plugin'
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
+import { env, nodeless } from 'unenv'
 import type { Plugin } from 'vite'
 import { compareModuleNames, isEnabled, isNodeProtocolImport, toRegExp, withoutNodeProtocol } from './utils'
 
@@ -145,6 +146,8 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     },
   }
 
+  const { alias, external, inject, polyfill } = env(nodeless)
+
   const isExcluded = (moduleName: ModuleName) => {
     if (optionsResolved.include.length > 0) {
       return !optionsResolved.include.some((includedName) => compareModuleNames(moduleName, includedName))
@@ -218,12 +221,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
             },
             plugins: [
               {
-                ...inject({
-                  // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
-                  ...(isEnabled(optionsResolved.globals.Buffer, 'build') ? { Buffer: 'vite-plugin-node-polyfills/shims/buffer' } : {}),
-                  ...(isEnabled(optionsResolved.globals.global, 'build') ? { global: 'vite-plugin-node-polyfills/shims/global' } : {}),
-                  ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
-                }),
+                ...rollupInject(inject),
               },
             ],
           },
@@ -275,6 +273,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
           // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L150
           alias: {
             ...polyfills,
+            ...alias,
           },
         },
       }
