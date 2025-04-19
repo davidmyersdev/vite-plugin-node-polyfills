@@ -1,0 +1,24 @@
+diff --git a/browser.js b/browser.js
+index d059362306586e0ed53170099e2e34aa7c756adb..0f4698f8bf106dd2f04a1e7d874dfa9d9fd72ed2 100644
+--- a/browser.js
++++ b/browser.js
+@@ -157,7 +157,9 @@ process.browser = true;
+ process.env = {};
+ process.argv = [];
+ process.version = ''; // empty string to avoid regexp issues
+-process.versions = {};
++process.versions = {
++    node: typeof navigator !== 'undefined' ? navigator.userAgent.split('/').pop() : ''
++};
+ 
+ function noop() {}
+ 
+@@ -170,6 +172,8 @@ process.removeAllListeners = noop;
+ process.emit = noop;
+ process.prependListener = noop;
+ process.prependOnceListener = noop;
++process.emitWarning = noop;
++process.nextTick = noop;
+ 
+ process.listeners = function (name) { return [] }
+ 
