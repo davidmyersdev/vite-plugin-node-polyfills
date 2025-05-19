@@ -14,14 +14,20 @@ jobs:
       - name: Run the linter
         run: pnpm lint
   test-e2e:
-    runs-on: ubuntu-22.04
-    steps:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.os == 'windows-latest' && 'cmd' || 'bash' }}
+    steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm playwright install --with-deps
-      - run: pnpm -r test:e2e
+      - run: pnpm -r test:e2e      
   test-unit:
     runs-on: ubuntu-latest
     steps:
