@@ -34,7 +34,7 @@ jobs:
         run: |
           jq '.pnpm.overrides.vite = "npm:rolldown-vite@^7.0.1"' package.json > package.tmp.json
           mv package.tmp.json package.json
-          pnpm i
+          pnpm i --no-frozen-lockfile
       - run: pnpm -r test:e2e
   test-unit:
     runs-on: ubuntu-latest
