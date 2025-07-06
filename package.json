@@ -124,7 +124,8 @@
       "vite": "^5.0.2"
     },
     "patchedDependencies": {
-      "buffer@6.0.3": "patches/buffer@6.0.3.patch"
+      "buffer@6.0.3": "patches/buffer@6.0.3.patch",
+      "process@0.11.10": "patches/process@0.11.10.patch"
     }
   }
 }
