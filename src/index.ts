@@ -201,8 +201,17 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
   return {
     name: 'vite-plugin-node-polyfills',
-    config: (config, env) => {
+    config(config, env) {
       const isDev = env.command === 'serve'
+      // @ts-expect-error - this.meta.rolldownVersion only exists with rolldown-vite 7+
+      const isRolldownVite = !!this?.meta?.rolldownVersion
+
+      // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
+      const defines = {
+        ...((isDev && isEnabled(optionsResolved.globals.Buffer, 'dev')) ? { Buffer: 'Buffer' } : {}),
+        ...((isDev && isEnabled(optionsResolved.globals.global, 'dev')) ? { global: 'global' } : {}),
+        ...((isDev && isEnabled(optionsResolved.globals.process, 'dev')) ? { process: 'process' } : {}),
+      }
 
       const shimsToInject = {
         // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
@@ -223,7 +232,11 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
                 rollupWarn(warning)
               })
             },
-            plugins: Object.keys(shimsToInject).length > 0 ? [inject(shimsToInject)] : [],
+            ...Object.keys(shimsToInject).length > 0
+              ? isRolldownVite
+                ? { inject: shimsToInject }
+                : { plugins: [inject(shimsToInject)] }
+              : {},
           },
         },
         esbuild: {
@@ -234,40 +247,55 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
           exclude: [
             ...globalShimPaths,
           ],
-          esbuildOptions: {
-            banner: isDev ? { js: globalShimsBanner } : undefined,
-            // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
-            define: {
-              ...((isDev && isEnabled(optionsResolved.globals.Buffer, 'dev')) ? { Buffer: 'Buffer' } : {}),
-              ...((isDev && isEnabled(optionsResolved.globals.global, 'dev')) ? { global: 'global' } : {}),
-              ...((isDev && isEnabled(optionsResolved.globals.process, 'dev')) ? { process: 'process' } : {}),
-            },
-            inject: [
-              ...globalShimPaths,
-            ],
-            plugins: [
-              esbuildPlugin(polyfills),
-              // Supress the 'injected path "..." cannot be marked as external' error in Vite 4 (emitted by esbuild).
-              // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1469
-              {
-                name: 'vite-plugin-node-polyfills-shims-resolver',
-                setup(build) {
-                  for (const globalShimPath of globalShimPaths) {
-                    const globalShimsFilter = toRegExp(globalShimPath)
+          ...isRolldownVite
+            ? {
+                rollupOptions: {
+                  define: defines,
+                  resolve: {
+                    // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L150
+                    alias: {
+                      ...polyfills,
+                    },
+                  },
+                  plugins: [
+                    {
+                      name: 'vite-plugin-node-polyfills:optimizer',
+                      banner: isDev ? globalShimsBanner : undefined,
+                    },
+                  ],
+                },
+              }
+            : {
+                esbuildOptions: {
+                  banner: isDev ? { js: globalShimsBanner } : undefined,
+                  define: defines,
+                  inject: [
+                    ...globalShimPaths,
+                  ],
+                  plugins: [
+                    esbuildPlugin(polyfills),
+                    // Supress the 'injected path "..." cannot be marked as external' error in Vite 4 (emitted by esbuild).
+                    // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1469
+                    {
+                      name: 'vite-plugin-node-polyfills-shims-resolver',
+                      setup(build) {
+                        for (const globalShimPath of globalShimPaths) {
+                          const globalShimsFilter = toRegExp(globalShimPath)
 
-                    // https://esbuild.github.io/plugins/#on-resolve
-                    build.onResolve({ filter: globalShimsFilter }, () => {
-                      return {
-                        // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1468
-                        external: false,
-                        path: globalShimPath,
-                      }
-                    })
-                  }
+                          // https://esbuild.github.io/plugins/#on-resolve
+                          build.onResolve({ filter: globalShimsFilter }, () => {
+                            return {
+                              // https://github.com/evanw/esbuild/blob/edede3c49ad6adddc6ea5b3c78c6ea7507e03020/internal/bundler/bundler.go#L1468
+                              external: false,
+                              path: globalShimPath,
+                            }
+                          })
+                        }
+                      },
+                    },
+                  ],
                 },
               },
-            ],
-          },
         },
         resolve: {
           // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L150
