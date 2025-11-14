@@ -234,7 +234,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
             },
             ...Object.keys(shimsToInject).length > 0
               ? isRolldownVite
-                ? { inject: shimsToInject }
+                ? { transform: { inject: shimsToInject } }
                 : { plugins: [inject(shimsToInject)] }
               : {},
           },
@@ -249,13 +249,15 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
           ],
           ...isRolldownVite
             ? {
-                rollupOptions: {
-                  define: defines,
+                rolldownOptions: {
                   resolve: {
                     // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L150
                     alias: {
                       ...polyfills,
                     },
+                  },
+                  transform: {
+                    define: defines,
                   },
                   plugins: [
                     {
