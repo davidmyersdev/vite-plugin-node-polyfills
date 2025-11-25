@@ -220,6 +220,29 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
       }
 
+      // Create a map of shim import paths to their resolved absolute paths
+      const shimImportMap = new Map<string, string>()
+      if (isEnabled(optionsResolved.globals.Buffer, 'build')) {
+        shimImportMap.set('vite-plugin-node-polyfills/shims/buffer', require.resolve('vite-plugin-node-polyfills/shims/buffer'))
+      }
+      if (isEnabled(optionsResolved.globals.global, 'build')) {
+        shimImportMap.set('vite-plugin-node-polyfills/shims/global', require.resolve('vite-plugin-node-polyfills/shims/global'))
+      }
+      if (isEnabled(optionsResolved.globals.process, 'build')) {
+        shimImportMap.set('vite-plugin-node-polyfills/shims/process', require.resolve('vite-plugin-node-polyfills/shims/process'))
+      }
+
+      // Plugin to resolve shim imports during build
+      const shimsResolverPlugin = shimImportMap.size > 0 ? {
+        name: 'vite-plugin-node-polyfills:shims-resolver',
+        resolveId(source: string) {
+          if (shimImportMap.has(source)) {
+            return { id: shimImportMap.get(source)!, external: false }
+          }
+          return null
+        },
+      } : null
+
       return {
         build: {
           rollupOptions: {
@@ -235,7 +258,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
             ...Object.keys(shimsToInject).length > 0
               ? isRolldownVite
                 ? { inject: shimsToInject }
-                : { plugins: [inject(shimsToInject)] }
+                : { plugins: [inject(shimsToInject), ...(shimsResolverPlugin ? [shimsResolverPlugin] : [])] }
               : {},
           },
         },
