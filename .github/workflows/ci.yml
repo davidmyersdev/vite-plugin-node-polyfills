@@ -22,7 +22,7 @@ jobs:
       - run: pnpm build:shims
       - run: pnpm playwright install --with-deps
       - run: pnpm -r test:e2e
-  test-e2e-rolldown-vite:
+  test-e2e-vite-8:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -30,9 +30,9 @@ jobs:
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm playwright install --with-deps
-      - name: update overrides to use rolldown-vite and re-install
+      - name: update overrides to use vite 8 beta and re-install
         run: |
-          jq '.pnpm.overrides.vite = "npm:rolldown-vite@^7.2.5"' package.json > package.tmp.json
+          jq '.pnpm.overrides.vite = "8.0.0-beta.7"' package.json > package.tmp.json
           mv package.tmp.json package.json
           pnpm i --no-frozen-lockfile
       - run: pnpm -r test:e2e
