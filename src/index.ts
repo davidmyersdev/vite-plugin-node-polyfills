@@ -215,9 +215,9 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
 
       const shimsToInject = {
         // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md#vite
-        ...(isEnabled(optionsResolved.globals.Buffer, 'build') ? { Buffer: 'vite-plugin-node-polyfills/shims/buffer' } : {}),
-        ...(isEnabled(optionsResolved.globals.global, 'build') ? { global: 'vite-plugin-node-polyfills/shims/global' } : {}),
-        ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
+        ...(isEnabled(optionsResolved.globals.Buffer, 'build') ? { Buffer: ['vite-plugin-node-polyfills/shims/buffer', 'Buffer'] } : {}),
+        ...(isEnabled(optionsResolved.globals.global, 'build') ? { global: ['vite-plugin-node-polyfills/shims/global', 'global'] } : {}),
+        ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: ['vite-plugin-node-polyfills/shims/process', 'process'] } : {}),
       }
 
       return {
