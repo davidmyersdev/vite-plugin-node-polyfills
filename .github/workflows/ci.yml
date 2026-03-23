@@ -30,9 +30,9 @@ jobs:
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm playwright install --with-deps
-      - name: update overrides to use vite 8 beta and re-install
+      - name: update overrides to use vite 8 and re-install
         run: |
-          jq '.pnpm.overrides.vite = "8.0.0-beta.7"' package.json > package.tmp.json
+          jq '.pnpm.overrides.vite = "8.0.1"' package.json > package.tmp.json
           mv package.tmp.json package.json
           pnpm i --no-frozen-lockfile
       - run: pnpm -r test:e2e
