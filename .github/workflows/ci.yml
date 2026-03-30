@@ -32,10 +32,10 @@ jobs:
       - run: pnpm playwright install --with-deps
       - name: update overrides to use vite 8 and re-install
         run: |
-          jq '.pnpm.overrides.vite = "8.0.1"' package.json > package.tmp.json
+          jq '.pnpm.overrides.vite = "8.0.1" | .pnpm.overrides.vitest = "^4.1.2"' package.json > package.tmp.json
           mv package.tmp.json package.json
           pnpm i --no-frozen-lockfile
-      - run: pnpm -r test:e2e
+      - run: pnpm -r test
   test-unit:
     runs-on: ubuntu-latest
     steps:

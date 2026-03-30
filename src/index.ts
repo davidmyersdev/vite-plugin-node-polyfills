@@ -104,6 +104,10 @@ const globalShimBanners = {
   ],
 }
 
+const isModuleName = (name: string): name is ModuleName => {
+  return name in stdLibBrowser
+}
+
 /**
  * Returns a Vite plugin to polyfill Node's Core Modules for browser environments. Supports `node:` protocol imports.
  *
@@ -194,6 +198,27 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
     ...((isEnabled(optionsResolved.globals.process, 'dev')) ? [require.resolve('vite-plugin-node-polyfills/shims/process')] : []),
   ]
 
+  const resolvePlugin: Plugin = {
+    name: 'vite-plugin-node-polyfills:resolve',
+    enforce: 'pre',
+    resolveId: {
+      // @ts-expect-error -- hook filters are only supported in Vite 6.3.0+
+      filter: { id: new RegExp(Object.keys(stdLibBrowser).map((name) => `^${name}\/?$`).join('|')) },
+      async handler(source, importer, opts) {
+        if (!optionsResolved.protocolImports && isNodeProtocolImport(source)) {
+          return
+        }
+        source = source.endsWith('/') ? source.slice(0, -1) : source // strip trailing slash
+        if (!isModuleName(source) || isExcluded(source)) {
+          return
+        }
+        const aliased = toOverride(withoutNodeProtocol(source)) || stdLibBrowser[source]
+        const resolved = await this.resolve(aliased, importer, { skipSelf: true, ...opts })
+        return resolved
+      },
+    },
+  }
+
   const globalShimsBanner = [
     ...((isEnabled(optionsResolved.globals.Buffer, 'dev')) ? globalShimBanners.buffer : []),
     ...((isEnabled(optionsResolved.globals.global, 'dev')) ? globalShimBanners.global : []),
@@ -273,16 +298,11 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
           ...isRolldownVite
             ? {
                 rolldownOptions: {
-                  resolve: {
-                    // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L150
-                    alias: {
-                      ...polyfills,
-                    },
-                  },
                   transform: {
                     define: defines,
                   },
                   plugins: [
+                    resolvePlugin,
                     {
                       name: 'vite-plugin-node-polyfills:optimizer',
                       banner: isDev ? globalShimsBanner : undefined,
@@ -322,16 +342,11 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
                 },
               },
         },
-        resolve: {
-          // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L150
-          alias: {
-            ...polyfills,
-          },
-        },
       }
     },
   }
   return [
+    resolvePlugin,
     injectPlugin,
     plugin,
   ]
