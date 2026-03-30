@@ -7,12 +7,7 @@ describe('import globals', () => {
       const result = await transformDev(`Buffer.from('test')`)
 
       expect(result?.code).toEqual(formatWhitespace(`
-        import __buffer_polyfill from "/shims/buffer/dist/index.js"
-        globalThis.Buffer = globalThis.Buffer || __buffer_polyfill
-        import __global_polyfill from "/shims/global/dist/index.js"
-        globalThis.global = globalThis.global || __global_polyfill
-        import __process_polyfill from "/shims/process/dist/index.js"
-        globalThis.process = globalThis.process || __process_polyfill
+        import { default as Buffer } from "/shims/buffer/dist/index.js";
 
         Buffer.from("test");
       `))
@@ -28,8 +23,7 @@ describe('import globals', () => {
       })
 
       expect(result?.code).toEqual(formatWhitespace(`
-        import __buffer_polyfill from "/shims/buffer/dist/index.js"
-        globalThis.Buffer = globalThis.Buffer || __buffer_polyfill
+        import { default as Buffer } from "/shims/buffer/dist/index.js";
 
         Buffer.from("test");
       `))
@@ -41,12 +35,7 @@ describe('import globals', () => {
       const result = await transformDev(`console.log(global)`)
 
       expect(result?.code).toEqual(formatWhitespace(`
-        import __buffer_polyfill from "/shims/buffer/dist/index.js"
-        globalThis.Buffer = globalThis.Buffer || __buffer_polyfill
-        import __global_polyfill from "/shims/global/dist/index.js"
-        globalThis.global = globalThis.global || __global_polyfill
-        import __process_polyfill from "/shims/process/dist/index.js"
-        globalThis.process = globalThis.process || __process_polyfill
+        import { default as global } from "/shims/global/dist/index.js";
 
         console.log(global);
       `))
@@ -62,8 +51,7 @@ describe('import globals', () => {
       })
 
       expect(result?.code).toEqual(formatWhitespace(`
-        import __global_polyfill from "/shims/global/dist/index.js"
-        globalThis.global = globalThis.global || __global_polyfill
+        import { default as global } from "/shims/global/dist/index.js";
 
         console.log(global);
       `))
@@ -75,12 +63,7 @@ describe('import globals', () => {
       const result = await transformDev(`console.log(process)`)
 
       expect(result?.code).toEqual(formatWhitespace(`
-        import __buffer_polyfill from "/shims/buffer/dist/index.js"
-        globalThis.Buffer = globalThis.Buffer || __buffer_polyfill
-        import __global_polyfill from "/shims/global/dist/index.js"
-        globalThis.global = globalThis.global || __global_polyfill
-        import __process_polyfill from "/shims/process/dist/index.js"
-        globalThis.process = globalThis.process || __process_polyfill
+        import { default as process } from "/shims/process/dist/index.js";
 
         console.log(process);
       `))
@@ -96,8 +79,7 @@ describe('import globals', () => {
       })
 
       expect(result?.code).toEqual(formatWhitespace(`
-        import __process_polyfill from "/shims/process/dist/index.js"
-        globalThis.process = globalThis.process || __process_polyfill
+        import { default as process } from "/shims/process/dist/index.js";
 
         console.log(process);
       `))
