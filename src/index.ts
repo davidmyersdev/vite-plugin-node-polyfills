@@ -245,7 +245,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
       } else {
         // hook filters are only supported in Vite 6.3.0+
         (transform as any).filter = {
-          code: new RegExp(globalShimPaths.map((re) => `\b${re}\b`).join('|')),
+          code: new RegExp(Object.keys(shimsToInject).join('|')),
         }
       }
 
