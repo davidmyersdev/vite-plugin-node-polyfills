@@ -239,10 +239,11 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
               : {},
           },
         },
-        esbuild: {
-          // In dev, the global polyfills need to be injected as a banner in order for isolated scripts (such as Vue SFCs) to have access to them.
-          banner: isDev ? globalShimsBanner : undefined,
-        },
+        // Vite 8+ (Rolldown) replaces esbuild with oxc for JS transforms
+        ...(isRolldownVite
+          ? { oxc: { jsxInject: isDev ? globalShimsBanner : undefined } }
+          : { esbuild: { banner: isDev ? globalShimsBanner : undefined } }
+        ),
         optimizeDeps: {
           exclude: [
             ...globalShimPaths,
