@@ -6,6 +6,8 @@ import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import type { Plugin } from 'vite'
 import { compareModuleNames, isEnabled, isNodeProtocolImport, toRegExp, withoutNodeProtocol } from './utils'
 
+type TransformHook = Extract<Plugin['transform'], Function>
+
 export type BuildTarget = 'build' | 'dev'
 export type BooleanOrBuildTarget = boolean | BuildTarget
 export type ModuleName = keyof typeof stdLibBrowser
@@ -130,7 +132,7 @@ const globalShimBanners = {
  * })
  * ```
  */
-export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
+export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
   const optionsResolved: PolyfillOptionsResolved = {
     include: [],
     exclude: [],
@@ -199,7 +201,23 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
     ``,
   ].join('\n')
 
-  return {
+  let rawInjectPlugin: Plugin | false | undefined
+  function transform(this: ThisParameterType<TransformHook>, code: string, id: string, opts: Parameters<TransformHook>[2]) {
+    if (rawInjectPlugin === undefined) {
+      throw new Error('transform called before inject plugin initialization')
+    }
+    if (rawInjectPlugin === false) {
+      return
+    }
+    return (rawInjectPlugin.transform as TransformHook).call(this, code, id, opts)
+  }
+  const injectPlugin: Plugin = {
+    name: 'vite-plugin-node-polyfills:inject',
+    enforce: 'post',
+    transform,
+  }
+
+  const plugin: Plugin = {
     name: 'vite-plugin-node-polyfills',
     config(config, env) {
       const isDev = env.command === 'serve'
@@ -220,6 +238,17 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
         ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
       }
 
+      const isNativeInjectAvailable = env.command === 'build' && isRolldownVite
+      rawInjectPlugin = (Object.keys(shimsToInject).length > 0 && !isNativeInjectAvailable) ? inject(shimsToInject) as Plugin : false
+      if (rawInjectPlugin === false) {
+        delete injectPlugin.transform
+      } else {
+        // hook filters are only supported in Vite 6.3.0+
+        (transform as any).filter = {
+          code: new RegExp(Object.keys(shimsToInject).join('|')),
+        }
+      }
+
       return {
         build: {
           rollupOptions: {
@@ -232,16 +261,10 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
                 rollupWarn(warning)
               })
             },
-            ...Object.keys(shimsToInject).length > 0
-              ? isRolldownVite
-                ? { transform: { inject: shimsToInject } }
-                : { plugins: [inject(shimsToInject)] }
+            ...(Object.keys(shimsToInject).length > 0 && isRolldownVite)
+              ? { transform: { inject: shimsToInject } }
               : {},
           },
-        },
-        esbuild: {
-          // In dev, the global polyfills need to be injected as a banner in order for isolated scripts (such as Vue SFCs) to have access to them.
-          banner: isDev ? globalShimsBanner : undefined,
         },
         optimizeDeps: {
           exclude: [
@@ -308,4 +331,8 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin => {
       }
     },
   }
+  return [
+    injectPlugin,
+    plugin,
+  ]
 }
