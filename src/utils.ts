@@ -1,4 +1,4 @@
-import type stdLibBrowser from 'node-stdlib-browser'
+import stdLibBrowser from 'node-stdlib-browser'
 import { type Plugin } from 'vite'
 
 export type BuildTarget = 'build' | 'dev'
@@ -31,6 +31,10 @@ export const isEnabled = (value: BooleanOrBuildTarget, target: BuildTarget) => {
   if (value === true) return true
 
   return value === target
+}
+
+export const isModuleName = (name: string): name is ModuleName => {
+  return name in stdLibBrowser
 }
 
 export const isNodeProtocolImport = (name: string) => {
