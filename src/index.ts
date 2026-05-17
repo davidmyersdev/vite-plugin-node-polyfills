@@ -4,14 +4,17 @@ import stdLibBrowser from 'node-stdlib-browser'
 import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rollup/plugin'
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import type { Plugin } from 'vite'
-import { compareModuleNames, isEnabled, isNodeProtocolImport, toRegExp, withoutNodeProtocol } from './utils'
-
-type TransformHook = Extract<Plugin['transform'], Function>
-
-export type BuildTarget = 'build' | 'dev'
-export type BooleanOrBuildTarget = boolean | BuildTarget
-export type ModuleName = keyof typeof stdLibBrowser
-export type ModuleNameWithoutNodePrefix<T = ModuleName> = T extends `node:${infer P}` ? P : never
+import {
+  type BooleanOrBuildTarget,
+  type ModuleName,
+  type ModuleNameWithoutNodePrefix,
+  type TransformHook,
+  compareModuleNames,
+  isEnabled,
+  isNodeProtocolImport,
+  toRegExp,
+  withoutNodeProtocol,
+} from './utils'
 
 export type PolyfillOptions = {
   /**

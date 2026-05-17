@@ -1,14 +1,21 @@
-import type { BooleanOrBuildTarget, ModuleName, ModuleNameWithoutNodePrefix } from './index'
+import type stdLibBrowser from 'node-stdlib-browser'
+import { type Plugin } from 'vite'
+
+export type BuildTarget = 'build' | 'dev'
+export type BooleanOrBuildTarget = boolean | BuildTarget
+export type ModuleName = keyof typeof stdLibBrowser
+export type ModuleNameWithoutNodePrefix<T = ModuleName> = T extends `node:${infer P}` ? P : never
+export type TransformHook = Extract<Plugin['transform'], Function>
 
 export const compareModuleNames = (moduleA: ModuleName, moduleB: ModuleName) => {
   return withoutNodeProtocol(moduleA) === withoutNodeProtocol(moduleB)
 }
 
-export const isEnabled = (value: BooleanOrBuildTarget, mode: 'build' | 'dev') => {
+export const isEnabled = (value: BooleanOrBuildTarget, target: BuildTarget) => {
   if (!value) return false
   if (value === true) return true
 
-  return value === mode
+  return value === target
 }
 
 export const isNodeProtocolImport = (name: string) => {
