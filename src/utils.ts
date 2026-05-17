@@ -11,6 +11,21 @@ export const compareModuleNames = (moduleA: ModuleName, moduleB: ModuleName) => 
   return withoutNodeProtocol(moduleA) === withoutNodeProtocol(moduleB)
 }
 
+export const globalShimBanners = {
+  buffer: [
+    `import __buffer_polyfill from 'vite-plugin-node-polyfills/shims/buffer'`,
+    `globalThis.Buffer = globalThis.Buffer || __buffer_polyfill`,
+  ],
+  global: [
+    `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global'`,
+    `globalThis.global = globalThis.global || __global_polyfill`,
+  ],
+  process: [
+    `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process'`,
+    `globalThis.process = globalThis.process || __process_polyfill`,
+  ],
+}
+
 export const isEnabled = (value: BooleanOrBuildTarget, target: BuildTarget) => {
   if (!value) return false
   if (value === true) return true
