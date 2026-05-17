@@ -14,7 +14,7 @@ jobs:
       - name: Run the linter
         run: pnpm lint
   test-e2e:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/install-dependencies
@@ -23,18 +23,17 @@ jobs:
       - run: pnpm playwright install --with-deps
       - run: pnpm -r test:e2e
   test-e2e-vite-8:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/install-dependencies
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm playwright install --with-deps
-      - name: update overrides to use vite 8 and re-install
-        run: |
-          jq '.pnpm.overrides.vite = "8.0.1"' package.json > package.tmp.json
-          mv package.tmp.json package.json
-          pnpm i --no-frozen-lockfile
+      - uses: ./.github/actions/override-dependency
+        with:
+          name: vite
+          version: 8.0.1
       - run: pnpm -r test:e2e
   test-unit:
     runs-on: ubuntu-latest

@@ -1,0 +1,27 @@
+name: Override dependency
+description: Override the pinned version of a specified dependency
+inputs:
+  name:
+    description: The name of the dependency to override.
+    required: true
+  version:
+    description: The version of the dependency to install.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Print package.json file
+      shell: bash
+      run: cat package.json
+    - name: Generate package.overrides.json file
+      shell: bash
+      run: jq '.pnpm.overrides["${{ inputs.name }}"] = "${{ inputs.version }}"' package.json > package.overrides.json
+    - name: Replace package.json with package.overrides.json
+      shell: bash
+      run: mv package.overrides.json package.json
+    - name: Print package.json file
+      shell: bash
+      run: cat package.json
+    - name: Install overrides
+      shell: bash
+      run: pnpm install --no-frozen-lockfile
