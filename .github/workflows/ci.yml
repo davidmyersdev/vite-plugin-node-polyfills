@@ -43,6 +43,22 @@ jobs:
       - run: pnpm build:core
       - run: pnpm build:shims
       - run: pnpm -r test
+  test-unit-vite-8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/install-dependencies
+      - run: pnpm build:core
+      - run: pnpm build:shims
+      - uses: ./.github/actions/override-dependency
+        with:
+          name: vite
+          version: 8.0.1
+      - uses: ./.github/actions/override-dependency
+        with:
+          name: vitest
+          version: ^4.1.2
+      - run: pnpm -r test
   typecheck:
     runs-on: ubuntu-latest
     steps:
