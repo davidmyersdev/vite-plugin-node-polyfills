@@ -8,8 +8,8 @@ test('sets the page title', async ({ page }) => {
 })
 
 test('logs the correct values', async ({ page }) => {
-  const errors = []
-  const logs = []
+  const errors: string[] = []
+  const logs: string[] = []
 
   page.on('console', (message) => {
     logs.push(message.text())

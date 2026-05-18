@@ -84,8 +84,7 @@
     "test:error-repros": "run-p test:error-repros:*",
     "test:error-repros:vite-scan-buffer-import-error": "pnpm --filter vite-scan-buffer-import-error test",
     "test:unit": "vitest run --dir ./test",
-    "typecheck": "run-p typecheck:*",
-    "typecheck:core": "tsc",
+    "typecheck": "tsc && run-p typecheck:*",
     "typecheck:react": "pnpm -C ./examples/react run typecheck",
     "typecheck:vanilla": "pnpm -C ./examples/vanilla run typecheck",
     "typecheck:vue": "pnpm -C ./examples/vue run typecheck"
@@ -101,13 +100,11 @@
     "@playwright/test": "^1.60.0",
     "@types/node": "^18.18.8",
     "buffer": "6.0.3",
-    "esbuild": "^0.19.8",
     "eslint": "^8.54.0",
     "eslint-config-artisan": "^0.2.1",
     "npm-run-all": "^4.1.5",
     "process": "^0.11.10",
-    "rollup": "^4.6.0",
-    "typescript": "4.8.3",
+    "typescript": "6.0.3",
     "vite": "^5.0.2",
     "vite-node": "^0.34.6",
     "vite-plugin-externalize-deps": "^0.1.5",
@@ -120,8 +117,7 @@
   },
   "pnpm": {
     "overrides": {
-      "buffer": "6.0.3",
-      "vite": "^5.0.2"
+      "buffer": "6.0.3"
     },
     "patchedDependencies": {
       "buffer@6.0.3": "patches/buffer@6.0.3.patch"
