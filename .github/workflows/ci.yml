@@ -5,6 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+permissions:
+  contents: none
 jobs:
   lint:
     runs-on: ubuntu-latest
