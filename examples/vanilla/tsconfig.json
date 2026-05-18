@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "noEmit": true,
