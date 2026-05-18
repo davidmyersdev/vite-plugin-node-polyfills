@@ -2,7 +2,7 @@
   "name": "vite-plugin-node-polyfills",
   "type": "module",
   "version": "0.28.0",
-  "packageManager": "pnpm@9.1.0+sha256.22e36fba7f4880ecf749a5ca128b8435da085ecd49575e7fb9e64d6bf4fad394",
+  "packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499",
   "description": "A Vite plugin to polyfill Node's Core Modules for browser environments.",
   "author": "David Myers <hello@davidmyers.dev>",
   "license": "MIT",

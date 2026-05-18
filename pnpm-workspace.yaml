@@ -1,4 +1,6 @@
+allowBuilds:
+  esbuild: true
 packages:
   - .
-  - './examples/*'
-  - './test/error-repros/*'
+  - ./examples/*
+  - ./test/error-repros/*
