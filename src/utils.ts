@@ -1,14 +1,40 @@
-import type { BooleanOrBuildTarget, ModuleName, ModuleNameWithoutNodePrefix } from './index'
+import stdLibBrowser from 'node-stdlib-browser'
+import { type Plugin } from 'vite'
+
+export type BuildTarget = 'build' | 'dev'
+export type BooleanOrBuildTarget = boolean | BuildTarget
+export type ModuleName = keyof typeof stdLibBrowser
+export type ModuleNameWithoutNodePrefix<T = ModuleName> = T extends `node:${infer P}` ? P : never
+export type TransformHook = Extract<Plugin['transform'], Function>
 
 export const compareModuleNames = (moduleA: ModuleName, moduleB: ModuleName) => {
   return withoutNodeProtocol(moduleA) === withoutNodeProtocol(moduleB)
 }
 
-export const isEnabled = (value: BooleanOrBuildTarget, mode: 'build' | 'dev') => {
+export const globalShimBanners = {
+  buffer: [
+    `import __buffer_polyfill from 'vite-plugin-node-polyfills/shims/buffer'`,
+    `globalThis.Buffer = globalThis.Buffer || __buffer_polyfill`,
+  ],
+  global: [
+    `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global'`,
+    `globalThis.global = globalThis.global || __global_polyfill`,
+  ],
+  process: [
+    `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process'`,
+    `globalThis.process = globalThis.process || __process_polyfill`,
+  ],
+}
+
+export const isEnabled = (value: BooleanOrBuildTarget, target: BuildTarget) => {
   if (!value) return false
   if (value === true) return true
 
-  return value === mode
+  return value === target
+}
+
+export const isModuleName = (name: string): name is ModuleName => {
+  return name in stdLibBrowser
 }
 
 export const isNodeProtocolImport = (name: string) => {

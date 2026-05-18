@@ -4,14 +4,20 @@ import stdLibBrowser from 'node-stdlib-browser'
 import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rollup/plugin'
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import type { Plugin } from 'vite'
-import { compareModuleNames, isEnabled, isNodeProtocolImport, toRegExp, withoutNodeProtocol } from './utils'
-
-type TransformHook = Extract<Plugin['transform'], Function>
-
-export type BuildTarget = 'build' | 'dev'
-export type BooleanOrBuildTarget = boolean | BuildTarget
-export type ModuleName = keyof typeof stdLibBrowser
-export type ModuleNameWithoutNodePrefix<T = ModuleName> = T extends `node:${infer P}` ? P : never
+import { getModulesToPolyfill } from './modules'
+import { buildTrailingSlashNormalizer } from './plugins'
+import {
+  type BooleanOrBuildTarget,
+  type ModuleName,
+  type ModuleNameWithoutNodePrefix,
+  type TransformHook,
+  compareModuleNames,
+  globalShimBanners,
+  isEnabled,
+  isNodeProtocolImport,
+  toRegExp,
+  withoutNodeProtocol,
+} from './utils'
 
 export type PolyfillOptions = {
   /**
@@ -89,21 +95,6 @@ export type PolyfillOptionsResolved = {
   protocolImports: boolean,
 }
 
-const globalShimBanners = {
-  buffer: [
-    `import __buffer_polyfill from 'vite-plugin-node-polyfills/shims/buffer'`,
-    `globalThis.Buffer = globalThis.Buffer || __buffer_polyfill`,
-  ],
-  global: [
-    `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global'`,
-    `globalThis.global = globalThis.global || __global_polyfill`,
-  ],
-  process: [
-    `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process'`,
-    `globalThis.process = globalThis.process || __process_polyfill`,
-  ],
-}
-
 /**
  * Returns a Vite plugin to polyfill Node's Core Modules for browser environments. Supports `node:` protocol imports.
  *
@@ -146,6 +137,16 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
       ...options.globals,
     },
   }
+
+  const modulesToPolyfill = getModulesToPolyfill({
+    modulesToExclude: optionsResolved.exclude,
+    modulesToInclude: optionsResolved.include,
+  })
+
+  const trailingSlashNormalizer = buildTrailingSlashNormalizer({
+    modules: modulesToPolyfill,
+    protocolImports: optionsResolved.protocolImports,
+  })
 
   const isExcluded = (moduleName: ModuleName) => {
     if (optionsResolved.include.length > 0) {
@@ -220,9 +221,11 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
   const plugin: Plugin = {
     name: 'vite-plugin-node-polyfills',
     config(config, env) {
+      const isBuild = env.command === 'build'
       const isDev = env.command === 'serve'
       // @ts-expect-error - this.meta.rolldownVersion only exists with rolldown-vite 7+
       const isRolldownVite = !!this?.meta?.rolldownVersion
+      const isNativeInjectAvailable = isBuild && isRolldownVite
 
       // https://github.com/niksy/node-stdlib-browser/blob/3e7cd7f3d115ac5c4593b550e7d8c4a82a0d4ac4/README.md?plain=1#L203-L209
       const defines = {
@@ -238,7 +241,6 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
         ...(isEnabled(optionsResolved.globals.process, 'build') ? { process: 'vite-plugin-node-polyfills/shims/process' } : {}),
       }
 
-      const isNativeInjectAvailable = env.command === 'build' && isRolldownVite
       rawInjectPlugin = (Object.keys(shimsToInject).length > 0 && !isNativeInjectAvailable) ? inject(shimsToInject) as Plugin : false
       if (rawInjectPlugin === false) {
         delete injectPlugin.transform
@@ -283,6 +285,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
                     define: defines,
                   },
                   plugins: [
+                    trailingSlashNormalizer,
                     {
                       name: 'vite-plugin-node-polyfills:optimizer',
                       banner: isDev ? globalShimsBanner : undefined,
@@ -331,8 +334,10 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
       }
     },
   }
+
   return [
+    trailingSlashNormalizer,
     injectPlugin,
     plugin,
-  ]
+  ].flat()
 }
