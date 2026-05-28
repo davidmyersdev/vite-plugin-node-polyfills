@@ -1,7 +1,7 @@
 import {
   Blob,
   BlobOptions,
-  Buffer,
+  Buffer as PolyfillBuffer,
   File,
   FileOptions,
   INSPECT_MAX_BYTES,
@@ -19,6 +19,9 @@ import {
   transcode,
 // eslint-disable-next-line unicorn/prefer-node-protocol
 } from 'buffer'
+
+// Prefer the host's real `globalThis.Buffer` when present
+const Buffer = (typeof globalThis !== 'undefined' && (globalThis as { Buffer?: typeof PolyfillBuffer }).Buffer) || PolyfillBuffer
 
 export {
   Blob,
