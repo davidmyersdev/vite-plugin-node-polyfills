@@ -67,6 +67,7 @@
     "build": "run-s build:core build:shims build:types",
     "build:core": "vite build",
     "build:shims": "run-p build:shims:*",
+    "build:shims:index": "vite build -c ./shims/vite.config.ts ./shims",
     "build:shims:buffer": "vite build -c ./shims/vite.config.ts ./shims/buffer",
     "build:shims:global": "vite build -c ./shims/vite.config.ts ./shims/global",
     "build:shims:process": "vite build -c ./shims/vite.config.ts ./shims/process",
