@@ -11,18 +11,23 @@ export const compareModuleNames = (moduleA: ModuleName, moduleB: ModuleName) => 
   return withoutNodeProtocol(moduleA) === withoutNodeProtocol(moduleB)
 }
 
+// Each line is terminated with a semicolon. When this banner is prepended to a dependency whose first
+// line begins with `(` or `+` (a UMD/IIFE bundle such as bootstrap or jquery-ui), an unterminated last
+// line lets ASI treat the dependency as a continuation, e.g. `globalThis.process || __process_polyfill
+// + function () {}()`. That short-circuits the IIFE when the global is already defined, so the library
+// never initializes. See https://github.com/davidmyersdev/vite-plugin-node-polyfills/issues/155
 export const globalShimBanners = {
   buffer: [
-    `import __buffer_polyfill from 'vite-plugin-node-polyfills/shims/buffer'`,
-    `globalThis.Buffer = globalThis.Buffer || __buffer_polyfill`,
+    `import __buffer_polyfill from 'vite-plugin-node-polyfills/shims/buffer';`,
+    `globalThis.Buffer = globalThis.Buffer || __buffer_polyfill;`,
   ],
   global: [
-    `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global'`,
-    `globalThis.global = globalThis.global || __global_polyfill`,
+    `import __global_polyfill from 'vite-plugin-node-polyfills/shims/global';`,
+    `globalThis.global = globalThis.global || __global_polyfill;`,
   ],
   process: [
-    `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process'`,
-    `globalThis.process = globalThis.process || __process_polyfill`,
+    `import __process_polyfill from 'vite-plugin-node-polyfills/shims/process';`,
+    `globalThis.process = globalThis.process || __process_polyfill;`,
   ],
 }
 
