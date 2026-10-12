@@ -5,7 +5,7 @@ import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rol
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
 import type { Plugin } from 'vite'
 import { getModulesToPolyfill } from './modules'
-import { buildTrailingSlashNormalizer } from './plugins'
+import { buildShimResolver, buildTrailingSlashNormalizer } from './plugins'
 import {
   type BooleanOrBuildTarget,
   type ModuleName,
@@ -147,6 +147,8 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
     modules: modulesToPolyfill,
     protocolImports: optionsResolved.protocolImports,
   })
+
+  const shimResolver = buildShimResolver()
 
   const isExcluded = (moduleName: ModuleName) => {
     if (optionsResolved.include.length > 0) {
@@ -337,6 +339,7 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
 
   return [
     trailingSlashNormalizer,
+    shimResolver,
     injectPlugin,
     plugin,
   ].flat()

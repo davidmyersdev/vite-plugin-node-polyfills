@@ -1,7 +1,52 @@
+import { fileURLToPath } from 'node:url'
 import { type Plugin } from 'vite'
 import { globals } from './globals'
 import { type ModuleName } from './modules'
 import * as regex from './regex'
+
+export const buildShimResolver = (): Plugin[] => {
+  const shimRegex = regex.compose([
+    'vite-plugin-node-polyfills/shims/',
+    regex.any(globals),
+  ])
+
+  const pluginPath = fileURLToPath(import.meta.url)
+
+  return [
+    {
+      // Modules that cannot resolve this package, such as those in another
+      // workspace or a strict package layout, get the shims from this
+      // package's own location.
+      name: 'vite-plugin-node-polyfills:shim-resolver',
+      enforce: 'pre',
+      resolveId: {
+        // @ts-expect-error This property is only supported in Vite v6.3.0+, so
+        // we must run the check inside the handler to maintain compatibility
+        // with older Vite versions.
+        filter: { id: shimRegex },
+        async handler(source, importer, options) {
+          if (!shimRegex.test(source)) {
+            return
+          }
+
+          const resolvedFromImporter = await this.resolve(source, importer, {
+            ...options,
+            skipSelf: true,
+          })
+
+          if (resolvedFromImporter) {
+            return resolvedFromImporter
+          }
+
+          return this.resolve(source, pluginPath, {
+            ...options,
+            skipSelf: true,
+          })
+        },
+      },
+    },
+  ]
+}
 
 export const buildTrailingSlashNormalizer = ({
   modules,
