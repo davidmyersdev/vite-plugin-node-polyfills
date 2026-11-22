@@ -12,6 +12,10 @@ test('logs the correct values', async ({ page }) => {
   const logs = []
 
   page.on('console', (message) => {
+    if (message.text().startsWith('[vite]')) {
+      return
+    }
+
     logs.push(message.text())
   })
 
@@ -42,8 +46,6 @@ test('logs the correct values', async ({ page }) => {
 
   if (isDev) {
     expect(logs).toEqual([
-      '[vite] connecting...',
-      '[vite] connected.',
       expect.stringMatching(/^class Symbol \{\s*\}$/),
       expect.stringMatching(/^\{Volume: , vol: _?Volume, createFsFromVolume: , fs: Object, memfs: \}$/),
       'function fetch() { [native code] }',

@@ -1,9 +1,10 @@
 import { createRequire } from 'node:module'
+import { resolve } from 'node:path'
 import inject from '@rollup/plugin-inject'
 import stdLibBrowser from 'node-stdlib-browser'
 import { handleCircularDependancyWarning } from 'node-stdlib-browser/helpers/rollup/plugin'
 import esbuildPlugin from 'node-stdlib-browser/helpers/esbuild/plugin'
-import type { Plugin } from 'vite'
+import { type Plugin, normalizePath } from 'vite'
 import { getModulesToPolyfill } from './modules'
 import { buildTrailingSlashNormalizer } from './plugins'
 import {
@@ -203,11 +204,15 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
   ].join('\n')
 
   let rawInjectPlugin: Plugin | false | undefined
+  let optimizedDepsDir: string | undefined
   function transform(this: ThisParameterType<TransformHook>, code: string, id: string, opts: Parameters<TransformHook>[2]) {
     if (rawInjectPlugin === undefined) {
       throw new Error('transform called before inject plugin initialization')
     }
     if (rawInjectPlugin === false) {
+      return
+    }
+    if (optimizedDepsDir && !opts?.ssr && id.startsWith(optimizedDepsDir)) {
       return
     }
     return (rawInjectPlugin.transform as TransformHook).call(this, code, id, opts)
@@ -220,6 +225,12 @@ export const nodePolyfills = (options: PolyfillOptions = {}): Plugin[] => {
 
   const plugin: Plugin = {
     name: 'vite-plugin-node-polyfills',
+    configResolved(config) {
+      // Build-only globals are not supplied by the dependency optimizer's dev shims.
+      optimizedDepsDir = (config.command === 'serve' && Object.values(optionsResolved.globals).every((value) => value !== 'build'))
+        ? `${normalizePath(resolve(config.cacheDir, 'deps'))}/`
+        : undefined
+    },
     config(config, env) {
       const isBuild = env.command === 'build'
       const isDev = env.command === 'serve'
